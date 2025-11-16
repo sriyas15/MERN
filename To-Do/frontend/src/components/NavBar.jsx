@@ -4,7 +4,7 @@ const NavBar = () => {
   return (
     <header className="navbar bg-base-100">
         <div className="flex-1">
-            <a className="btn btn-ghost text-xl">To-Do List</a>
+            <a className="btn btn-ghost text-xl">Money Calculator</a>
         </div>
         <div className="flex-none">
             <ul className="menu menu-horizontal px-1">

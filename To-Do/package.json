@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "ser":"nodemon backend/server.js",
-    "client":"npm run dev --prefix frontend"
+    "client":"npm run dev --prefix frontend",
+    "both":"concurrently \"npm run ser\" \"npm run client\""
   },
   "keywords": [],
   "author": "",
