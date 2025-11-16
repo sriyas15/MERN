@@ -4,7 +4,8 @@
   "main": "server.js",
   "type": "module",
   "scripts": {
-    "ser":"nodemon backend/server.js"
+    "ser":"nodemon backend/server.js",
+    "client":"npm run dev --prefix frontend"
   },
   "keywords": [],
   "author": "",
@@ -20,9 +21,6 @@
   },
   "devDependencies": {
     "@vitejs/plugin-react": "^5.1.1",
-    "autoprefixer": "^10.4.22",
-    "postcss": "^8.5.6",
-    "tailwindcss": "^3.4.18",
     "vite": "^7.2.2"
   }
 }
