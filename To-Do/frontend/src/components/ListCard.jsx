@@ -2,6 +2,7 @@ import axios from "axios";
 import { PenSquare,Trash2  } from "lucide-react";
 import { api } from "../lib/api";
 import toast from "react-hot-toast";
+import { formatDate } from "../lib/utils";
 
 const ListCard = ({list,fetchList,setContent,setAmount,setEditBtn,setEditId}) => {
 
@@ -39,7 +40,7 @@ const ListCard = ({list,fetchList,setContent,setAmount,setEditBtn,setEditId}) =>
                         <PenSquare className="w-4 h-4 text-primary cursor-pointer" onClick={editList}/>
                         <Trash2 className="w-4 h-4 text-red-500 cursor-pointer" onClick={deleteList} />
                     </div>
-
+                    <p className="absolute right-24 my-auto text-sm text-gray-500">{formatDate(new Date(list.updatedAt))}</p>
                 </span>
             </li>
         </ul>

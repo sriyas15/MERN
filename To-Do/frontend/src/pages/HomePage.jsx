@@ -1,10 +1,7 @@
 import { useEffect, useState } from "react";
-import NavBar from "../components/NavBar"
 import ListCard from "../components/ListCard";
-import axios from 'axios'
 import toast from "react-hot-toast";
 import {LoaderIcon} from 'lucide-react'
-import {useNavigate} from 'react-router-dom'
 import { api } from "../lib/api";
 
 const HomePage = () => {
@@ -17,9 +14,7 @@ const HomePage = () => {
   const [ listTotal,setListTotal ] = useState(0);
   const [ editBtn,setEditBtn ] = useState(false);
   const [editId, setEditId] = useState(null);
-
-
-  const navigate = useNavigate();
+  const [ btnLoad,setBtnLoad ] = useState(false);
 
   const fetchList = async()=>{
 
@@ -49,7 +44,8 @@ const HomePage = () => {
     }
 
     try {
-      
+      setBtnLoad(true);
+
       if(editBtn){
 
         await api.put(`/list/${editId}`,{content,amount});
@@ -69,6 +65,9 @@ const HomePage = () => {
     } catch (error) {
       console.log("Error in Adding ",error);
       toast.error("Something was wrong");
+    }
+    finally{
+      setBtnLoad(false)
     }
 
   }
@@ -114,8 +113,9 @@ const HomePage = () => {
             </div>
 
             <button className=" flex justify-center btn btn-secondary mt-5 ml-auto " 
-              type="submit">
+              type="submit" disabled={btnLoad}>
                 {editBtn ? "Update" : "Add"}
+                {btnLoad ? "Adding" : ""}
              </button>
           </form>
         

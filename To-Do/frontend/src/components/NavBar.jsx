@@ -1,19 +1,30 @@
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import { Sun,Moon,Coffee,Trees } from 'lucide-react'
 
 
 const NavBar = () => {
 
+    const [ theme,setTheme ] = useState("light");
+
     useEffect(()=>{
 
-        const savedTheme = localStorage.getItem("theme" || "light");
+        const savedTheme = localStorage.getItem("theme") || "light";
+        setTheme(savedTheme);
         document.documentElement.setAttribute("data-theme",savedTheme);
 
     },[])
 
     const toggleTheme = (newTheme)=>{
+        setTheme(newTheme);
         document.documentElement.setAttribute("data-theme",newTheme);
         localStorage.setItem("theme",newTheme);
+    }
+
+    const Theme = ()=>{
+        if(theme === "light") return <Sun className="w-4 h-4 text-yellow-500"/>
+        if(theme === "dark") return <Moon className="w-4 h-4 text-gray-500"/>
+        if(theme === "coffee") return <Coffee className="w-4 h-4 text-amber-600"/>
+        if(theme === "forest") return <Trees className="w-4 h-4 text-green-500"/>
     }
 
   return (
@@ -26,16 +37,16 @@ const NavBar = () => {
             <li><a>Favourite</a></li>
             <li>
                 <details>
-                <summary>Theme</summary>
+                <summary>Theme <Theme/></summary>
                 <ul className="bg-base-100 rounded-t-none p-2">
                     <li>
-                        <button className="relative btn text-yellow-700"
+                        <button className="relative btn text-yellow-500"
                         onClick={()=>toggleTheme("light")}>
                         Light <Sun className="absolute right-0 w-4 h-4" />
                         </button>
                     </li>
                     <li>
-                        <button className="relative btn text-gray-600"
+                        <button className="relative btn text-gray-500"
                         onClick={()=>toggleTheme("dark")}>
                         <Moon className="absolute right-0 w-4 h-4" />
                         Dark
