@@ -1,4 +1,3 @@
-import axios from "axios";
 import { PenSquare,Trash2  } from "lucide-react";
 import { api } from "../lib/api";
 import toast from "react-hot-toast";
@@ -31,7 +30,7 @@ const ListCard = ({list,fetchList,setContent,setAmount,setEditBtn,setEditId}) =>
     }
 
   return (
-    <div className="relative mt-5">
+    <div className="relative mt-5 mb-5">
         <ul className="space-y-3">
             <li className="flex justify-center items-center gap-3 p-3 rounded-xl border border-primary/30 bg-primary/10 hover:bg-primary/20 transition">
                 <span className="flex font-serif text-primary">

@@ -30,14 +30,14 @@ const NavBar = () => {
   return (
     <header className="navbar bg-base-100">
         <div className="flex-1">
-            <a className="btn btn-ghost text-xl">Money Calculator</a>
+            <h1 className="text-primary font-bold text-2xl">Money Calculator</h1>
         </div>
         <div className="flex-none">
             <ul className="menu menu-horizontal px-1">
-            <li><a>Favourite</a></li>
+            <li><a className="text-primary">Favourite</a></li>
             <li>
                 <details>
-                <summary>Theme <Theme/></summary>
+                <summary className="text-primary">Theme <Theme/></summary>
                 <ul className="bg-base-100 rounded-t-none p-2">
                     <li>
                         <button className="relative btn text-yellow-500"
