@@ -1,8 +1,10 @@
 import { Users } from "../model/userModel.js";
 import bcrypt from 'bcrypt';
+import { generateTokens } from "../utils/generateTokens.js";
+import { asyncHandler } from "../middleware/asyncHandler.js";
 
-export const registerUser = async (req, res) => {
-    try {
+export const registerUser = asyncHandler(async(req, res) => {
+    
         const { name,username, email, password } = req.body;
 
         if (!username || !email || !password)
@@ -14,11 +16,13 @@ export const registerUser = async (req, res) => {
             return res.status(400).json({ message: "User's email already exists" });
         }
 
-        const encryptedPassword = await bcrypt.hash(password,10);
+        const hashPassword = await bcrypt.hash(password,10);
 
         const newUser = await Users.create({
-            name,username, email, password:encryptedPassword
+            name,username, email, password:hashPassword
         });
+
+        generateTokens(res,newUser._id);
 
         const user = await Users.findById(newUser._id).select("-password");
 
@@ -26,17 +30,10 @@ export const registerUser = async (req, res) => {
             message: "New User Registered",
             user
         });
-
-    } catch (error) {
-        console.log("Error in Creating New User", error);
-        res.status(500).json({ message: "Server Error" });
-    }
-};
+});
 
 
-export const login = async (req,res) => {
-    
-    try {
+export const login = asyncHandler(async(req,res) => {
         
         const { email,password } = req.body;
 
@@ -49,17 +46,23 @@ export const login = async (req,res) => {
              return res.status(400).json({ message: "User not found" });
         }
 
-        const decrypt = await bcrypt.compare(password,user.password);
+        const isMatch = await bcrypt.compare(password,user.password);
         
-        if(!decrypt)
+        if(!isMatch)
             return res.status(400).json({message:"Invalid Password, your password is wrong"});
+
+        generateTokens(res,user._id);
 
         const loggedUser = await Users.findById(user._id).select("-password");
 
         res.status(200).json({message:"Logged In",loggedUser});
+})
 
-    } catch (error) {
-        console.log(`Something Wrong in Log In ${error}`);
-        res.status(500).json({message:"Server Error"});
-    }
-}
+export const logout = asyncHandler(async(req,res) => {
+    
+    res.cookie("jwt","",{
+        httpOnly:true,
+        expires:new Date(0)
+    });
+    res.json({message:"Logged Out"});
+})
