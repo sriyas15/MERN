@@ -60,9 +60,73 @@ export const login = asyncHandler(async(req,res) => {
 
 export const logout = asyncHandler(async(req,res) => {
     
-    res.cookie("jwt","",{
-        httpOnly:true,
-        expires:new Date(0)
+    res.cookie("jwt", "", {
+        httpOnly: true,
+        sameSite: "strict",
+        secure: process.env.NODE_ENV === "production",
+        expires: new Date(0)
     });
+
     res.json({message:"Logged Out"});
+});
+
+export const getProfile = asyncHandler(async(req,res) => {
+
+    const user = {
+        _id: req.user._id,
+        name: req.user.name,
+        email: req.user.email,
+        isAdmin: req.user.isAdmin
+    }
+
+    res.status(200).json({message:"User Profile:",user});
 })
+
+export const getUsers = asyncHandler(async (req,res) => {
+    
+    const users = await Users.find().select("-password");
+    res.status(200).json({message:"Users Details",users});
+});
+
+export const updateUser = asyncHandler(async (req,res) => {
+
+    const user = await Users.findById(req.params.id);
+
+    if(!user)
+        return res.status(404).json({message:"User not Found to update"});
+    
+    user.name = req.body.name || user.name;
+    user.email = req.body.email || user.email;
+    user.username = req.body.username || user.username;
+
+    if(req.body.password)
+        user.password = await bcrypt.hash(req.body.password,10);
+
+    const updatedUser = await user.save();
+
+    res.status(200).json(
+        {
+            message:`User ${req.params.id} account Updated successfully`,
+            updatedUser
+        });
+
+});
+
+export const deleteUser = asyncHandler(async (req,res) => {
+
+    const userToDelete = await Users.findByIdAndDelete(req.params.id);
+
+    if(!userToDelete)
+        return res.status(404).json({message:"User not Found to delete"});
+
+    if (req.params.id === req.user._id.toString()) {
+        return res.status(400).json({ message: "Admin cannot delete self" });
+    }
+
+    res.status(200).json({
+        message:`User ${req.params.id} deleted successfully`,
+        user: userToDelete
+    });
+
+
+});
