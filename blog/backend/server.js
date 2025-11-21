@@ -4,6 +4,7 @@ import { connectDB } from './src/config/db.js';
 import { errorMiddleware } from './src/middleware/errorMiddleware.js'
 import userRoutes from './src/routes/userRoutes.js';
 import blogRoutes from './src/routes/blogRoutes.js';
+import commentRoutes from './src/routes/commentRoutes.js';
 import cookieParser from 'cookie-parser';
 
 dotenv.config({path:"backend/.env"});
@@ -15,8 +16,10 @@ connectDB();
 app.use(express.json());
 app.use(cookieParser());
 
-app.use("/api/blog",blogRoutes)
+app.use("/api/comment",commentRoutes);
 app.use("/api/users",userRoutes);
+app.use("/api/blog",blogRoutes);
+
 
 app.use(errorMiddleware);
 app.listen(process.env.PORT,(req,res)=>{
