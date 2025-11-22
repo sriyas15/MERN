@@ -21,15 +21,26 @@ const userSchema = new mongoose.Schema({
         select:false
     },
     avatar:{
-        type:String
+        public_id:String,
+        url:String
     },
+    followers:[{
+        type:mongoose.Schema.Types.ObjectId,
+        ref:"Users"
+    }],
+    following:[{
+        type:mongoose.Schema.Types.ObjectId,
+        ref:"Users"
+    }],
     bio:{
-        type:String
+        type:String,
+        default:"Hey there! I am using this super fun blog site"
     },
     isAdmin:{
         type:Boolean,
         default:false
     }
+
 
 },{timestamps:true})
 
