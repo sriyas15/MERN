@@ -17,10 +17,10 @@ const blogSchema = new mongoose.Schema({
     coverImage:{
         type:String
     },
-    likes:{
-        type:Number,
-        default:0
-    },
+    likes:[{
+        type:mongoose.Schema.Types.ObjectId,
+        ref:"Users",
+    }],
     comments:[{
         type:mongoose.Schema.Types.ObjectId,
         ref:"Comments"

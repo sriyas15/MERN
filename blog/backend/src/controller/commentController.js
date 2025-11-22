@@ -68,4 +68,27 @@ export const getAllComment = asyncHandler(async (req,res) => {
     if(getAllComm.length === 0) return res.status(404).json({message:"No comments found"});
 
     res.status(200).json({message:"All Comments",getAllComm});
-})
+});
+
+export const commentToggleLike = asyncHandler(async (req,res) => {
+
+    const comment = await Comments.findById(req.params.id);
+    if(!comment) return res.status(404).json({message:"Comment not found"});
+
+    const userId = req.user.id;
+
+    if(!comment.likes) comment.likes = [];
+
+    if(comment.likes.includes(userId)){
+        comment.likes.pull(userId);
+        await comment.save();
+
+        return res.status(200).json({message:"Unliked the comment",likes:comment.likes.length});
+    }
+
+    comment.likes.push(userId);
+    await comment.save();
+
+    res.status(200).json({message:"Liked the comment",likes:comment.likes.length});
+    
+});

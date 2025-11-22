@@ -15,10 +15,10 @@ const commentSchema = new mongoose.Schema({
         ref:"Blogs",
         required:true
     },
-    like:{
-        type:Number,
-        default:0
-    }
+    likes:[{
+        type:mongoose.Schema.Types.ObjectId,
+        ref:"Users"
+    }]
     
 },{timestamps:true});
 

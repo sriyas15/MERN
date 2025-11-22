@@ -45,4 +45,25 @@ export const getAllBlogs = asyncHandler(async (req,res) => {
         if(getAll.length === 0) return res.status(404).json({message:"Blogs not Found"});
         
         res.status(200).json({message:"All Blogs",getAll});
-})
+});
+
+export const toggleLike = asyncHandler(async (req,res) => {
+
+        const blog = await Blogs.findById(req.params.id);
+        if(!blog) return res.status(404).json({message:"Blog not Found"});
+
+        const userId = req.user.id;
+        
+        if (!blog.likes) blog.likes = [];
+
+        if( blog.likes?.includes(userId) ){
+                blog.likes.pull(userId);
+                await blog.save();
+                return res.status(200).json({message:"Unliked the post",likes:blog.likes.length});
+        }
+                
+        blog.likes.push(userId);
+        await blog.save();
+
+        res.status(201).json({message:"Liked",likes:blog.likes.length});
+});

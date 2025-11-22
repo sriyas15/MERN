@@ -16,9 +16,9 @@ connectDB();
 app.use(express.json());
 app.use(cookieParser());
 
-app.use("/api/comment",commentRoutes);
+app.use("/api/comments",commentRoutes);
 app.use("/api/users",userRoutes);
-app.use("/api/blog",blogRoutes);
+app.use("/api/blogs",blogRoutes);
 
 
 app.use(errorMiddleware);
