@@ -8,7 +8,7 @@ export const registerUser = asyncHandler(async(req, res) => {
     
         const { name,username, email, password } = req.body;
 
-        if (!username || !email || !password)
+        if ( !name.trim() || !username.trim() || !email.trim() || !password.trim() )
             return res.status(400).json({ message: "All fields required" });
 
         const userExist = await Users.findOne({
@@ -58,12 +58,14 @@ export const registerUser = asyncHandler(async(req, res) => {
 
 export const login = asyncHandler(async(req,res) => {
         
-        const { email,password } = req.body;
+        const { identifier,password } = req.body;
 
-        if(!email.trim() || !password.trim())
+        if(!identifier.trim() || !password.trim())
             return res.status(400).json({message:"Please fill all the fields"});
 
-        const user = await Users.findOne({email}).select("+password");
+        const isEmail = identifier.includes("@");
+
+        const user = await Users.findOne(isEmail ? { email:identifier } : { username:identifier }).select("+password");
 
         if(!user){
              return res.status(400).json({ message: "User not found" });
