@@ -158,13 +158,37 @@ export const updateUser = asyncHandler(async (req,res) => {
     const updatedUser = await user.save();
     updatedUser.password = undefined; // preventing password from sending as response
 
-    res.status(200).json(
-        {
-            message:`User ${req.params.id} account Updated successfully`,
-            updatedUser
-        });
+    res.status(200).json({message:`User ${req.params.id} account Updated successfully`,updatedUser});
 });
 
+
+export const toggleFollower = asyncHandler(async (req,res) => {
+
+    const usertoFollow = await Users.findById(req.params.id);
+    const loggedInUser = await Users.findById(req.user.id); 
+
+    if(!usertoFollow)
+        return res.status(404).json({message:"User not Found"});
+
+    if(loggedInUser._id.toString() === usertoFollow._id.toString())
+        return res.status(400).json({message:"You cannot follow yourself"});
+
+    const isFollowing = loggedInUser.following.includes(usertoFollow.id);
+
+    if(isFollowing){
+        loggedInUser.following.pull(usertoFollow._id);
+        usertoFollow.followers.pull(loggedInUser._id);
+    }
+    else{
+        loggedInUser.following.push(usertoFollow._id);
+        usertoFollow.followers.push(loggedInUser._id);
+    }
+
+    await loggedInUser.save();
+    await usertoFollow.save();
+
+    res.status(200).json({message: isFollowing ? "Unfollowed" : "Following",following:loggedInUser.following.length});
+});
 
 export const deleteUser = asyncHandler(async (req,res) => {
 
@@ -173,9 +197,8 @@ export const deleteUser = asyncHandler(async (req,res) => {
     if(!userToDelete)
         return res.status(404).json({message:"User not Found to delete"});
 
-    if (req.params.id === req.user._id.toString()) {
+    if (req.params.id === req.user._id.toString())
         return res.status(400).json({ message: "Admin cannot delete self" });
-    }
 
     await userToDelete.deleteOne();
 
@@ -183,6 +206,4 @@ export const deleteUser = asyncHandler(async (req,res) => {
         message:`User ${req.params.id} deleted successfully`,
         user: userToDelete
     });
-
-
 });
