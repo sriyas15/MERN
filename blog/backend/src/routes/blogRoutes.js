@@ -9,7 +9,7 @@ router.post("/post",protect,upload.single("coverImage"),uploadBlog);
 router.put("/:id",protect,upload.single("coverImage"),updateBlog);
 router.route("/:id").delete(protect,deleteBlog);
 
-router.get("/admin/allBlogs",protect,admin,getAllBlogs);
+router.get("/",protect,getAllBlogs);
 router.put("/:id/like",protect,toggleLike);
 
 export default router;

@@ -28,8 +28,9 @@ const loginHandler = async(e)=>{
 
   try {
 
-    await login( {identifier,password} ).unwrap();
-
+    const data = await login( {identifier,password} ).unwrap();
+    console.log(data.loggedUser);
+    localStorage.setItem("user",JSON.stringify(data.loggedUser));
     toast.success("Logged In");
     setIdentifier("");
     setPassword("");

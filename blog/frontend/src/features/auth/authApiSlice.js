@@ -18,8 +18,16 @@ export const authApiSlice = apiSlice.injectEndpoints({
                 body:userData
             })
         }),
+
+        updateUser:builder.mutation({
+            query:({userId,formData})=>({
+                url:`users/${userId}`,
+                method:"PUT",
+                body:formData
+            }),
+        }),
         
     }),
 });
 
-export const { useSignupMutation,useLoginMutation } = authApiSlice
+export const { useSignupMutation,useLoginMutation,useUpdateUserMutation } = authApiSlice

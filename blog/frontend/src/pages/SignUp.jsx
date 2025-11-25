@@ -34,10 +34,11 @@ const SignUp = () => {
     }
 
     try {
-      
-      await signup({name,username,email,password}).unwrap();
+    
+      const data = await signup({name,username,email,password}).unwrap();
 
       toast.success("New Account Created");
+      localStorage.setItem("user",JSON.stringify(data.user));
 
       setName("");
       setUsername("");

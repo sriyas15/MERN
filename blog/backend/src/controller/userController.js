@@ -131,6 +131,7 @@ export const updateUser = asyncHandler(async (req,res) => {
     user.name = req.body.name ?? user.name;
     user.email = req.body.email ?? user.email;
     user.username = req.body.username ?? user.username;
+    user.bio = req.body.bio ?? user.bio;
 
     if(req.body.password)
         user.password = await bcrypt.hash(req.body.password,10);
