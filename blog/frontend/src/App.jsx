@@ -6,6 +6,8 @@ import './App.css'
 import HomePage from './pages/HomePage'
 import AfterRegistraion from './pages/AfterRegistraion'
 import FeedsPage from './pages/FeedsPage'
+import UserProfile from './pages/UserProfile'
+import PostBlog from './components/PostBlog'
 
 function App() {
 
@@ -13,10 +15,12 @@ function App() {
     <>
     <Routes>
       <Route path='/' element={<HomePage/>}/>
+      <Route path='/post' element={<PostBlog/>}/>
       <Route path='/login' element={<LoginPage/>}/>
       <Route path='/signup' element={<SignUp/>}/>
       <Route path='/userDetails' element={<AfterRegistraion/>}/>
       <Route path='/feeds' element={<FeedsPage/>}/>
+      <Route path='/profile' element={<UserProfile/>}/>
     </Routes>
     </>
   )

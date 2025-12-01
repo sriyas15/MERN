@@ -1,16 +1,31 @@
 
-import { useEffect, useState } from "react";
-import { Moon, Sun, LogOut, User, Menu, MessageCircle, Heart } from "lucide-react";
+import { useState } from "react";
+import { Moon, Sun, LogOut, User, Menu, MessageCircle, Heart, Ellipsis, Edit, Trash } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
-import { useGetBlogsQuery, useToggleLikeMutation } from '../features/blog/blogApiSlice';
+import { useDeleteBlogMutation, useEditBlogMutation, useGetBlogsQuery, useToggleLikeMutation } from '../features/blog/blogApiSlice';
 import toast from "react-hot-toast";
+import { useLazyGetCommentsQuery } from "../features/comments/commentsApiSlice";
+import { useFollowMutation, useLogoutMutation } from "../features/auth/authApiSlice";
+import CommentsCard from "../components/CommentsCard";
+import { timeAgo } from "../utils/timeAgo";
 
 const FeedsPage = () => {
 
   const [theme, setTheme] = useState("light");
   const [openMenu, setOpenMenu] = useState(false);
+  const [openCommentsId, setOpenCommentsId] = useState(null);
 
+  //User RTK Quries
+  const [ follow,{followLoads} ] = useFollowMutation();
+  const [ logout ] = useLogoutMutation();
+
+  //Blog RTK Querie
   const { data: blogs, isLoading, isError } = useGetBlogsQuery();
+  const [ editBlog ] = useEditBlogMutation();
+  const [ deleteBlog ] = useDeleteBlogMutation();
+
+  //Coment RTK Queries
+  const [ triggerComment,{ data:commentData, isLoading:commentsLoading } ] = useLazyGetCommentsQuery();
 
   const userDetails = JSON.parse(localStorage.getItem("user"));
 
@@ -29,7 +44,22 @@ const FeedsPage = () => {
     document.documentElement.setAttribute("data-theme", next);
   };
 
-  const followBtn = async()=>{}
+  const followBtn = async(blogAuthor)=>{
+
+    try {
+      
+      const followData = await follow(blogAuthor._id).unwrap();
+      console.log(userDetails)
+      if(followData.message === "Following")
+        toast.success(`${blogAuthor.name} added to following list`);
+
+      else toast.success(`Unfollowed ${blogAuthor.name}`);
+      
+    } catch (error) {
+      console.log(`Error in following`);
+      toast.error(error?.data?.message);
+    }
+  }
 
   const toggleLikeBtn = async(id)=>{
 
@@ -45,6 +75,59 @@ const FeedsPage = () => {
 
   }
 
+  const commentsHandler = async(id)=>{
+
+    try {
+      
+      await triggerComment(id).unwrap();
+
+    } catch (error) {
+      console.log("Error in fetching comments");
+      toast.error(error?.data?.message);
+    }
+  }
+
+  const logoutHandler = async()=>{
+
+    try {
+      
+      await logout().unwrap();
+      localStorage.removeItem("user")
+      toast.success("Logged Out");
+      navigate("/");
+
+    } catch (error) {
+      console.log("Error in Logout");
+      toast.error(error?.data?.message);
+    }
+  }
+
+  const editBlogHandler = async(id)=>{
+
+    try {
+      
+    } catch (error) {
+      
+    }
+    
+  }
+
+  const deleteBlogHandler = async(id)=>{
+
+    if(!window.confirm("Are you sure want to delete the blog?"))
+      return;
+
+    try {
+      
+      await deleteBlog(id).unwrap();
+
+      toast.success("Blog Deleted");
+    } catch (error) {
+      console.log("Error in Deletion of Blog");
+      toast.error(error?.data?.message);
+    }
+  }
+
   return (
     <div className="min-h-screen bg-base-200">
       {/* ✅ Navbar */}
@@ -56,6 +139,7 @@ const FeedsPage = () => {
         </div>
 
         <div className="flex-none gap-3 relative">
+          <Link to={"/post"} className="">Post</Link>
           {/* ✅ Theme toggle */}
           <button onClick={toggleTheme} className="btn btn-ghost btn-sm">
             {theme === "light" ? <Moon size={18} /> : <Sun size={18} />}
@@ -63,26 +147,23 @@ const FeedsPage = () => {
 
           {/* ✅ User Menu */}
           <div className="dropdown dropdown-end">
-            <div
-              tabIndex={0}
-              role="button"
-              className="avatar cursor-pointer"
-            >
+
+            <div tabIndex={0} role="button" className="avatar cursor-pointer">
+
               <div className="w-9 rounded-full ring ring-primary ring-offset-base-100 ring-offset-2">
                 <img src={userDetails?.avatar?.url || image} alt="User" />
               </div>
+
             </div>
-            <ul
-              tabIndex={0}
-              className="menu dropdown-content bg-base-100 rounded-xl shadow p-2 mt-3 w-40"
-            >
+
+            <ul tabIndex={0} className="menu dropdown-content bg-base-100 rounded-xl shadow p-2 mt-3 w-40">
               <li>
-                <Link to="/profile">
+                <Link to="/profile" state={{userDetails}}>
                   <User size={16} /> Profile
                 </Link>
               </li>
               <li>
-                <button>
+                <button onClick={logoutHandler}>
                   <LogOut size={16} /> Logout
                 </button>
               </li>
@@ -99,14 +180,15 @@ const FeedsPage = () => {
       </nav>
 
       {/* ✅ Feed */}
-      <div className="max-w-3xl mx-auto py-8 px-4 space-y-6">
+      <div className="relative max-w-3xl mx-auto py-8 px-4 space-y-6">
+
         {blogData?.map((post) => {
+
             const isLiked = post.likes?.includes(userDetails?._id);
+
             return (
-          <div
-            key={post._id}
-            className="card bg-base-100 shadow-md hover:shadow-lg transition"
-          >
+          <div key={post._id}
+            className="card bg-base-100 shadow-md hover:shadow-lg transition">
             {post.coverImage && (
               <figure>
                 <img src={post.coverImage.url} alt={post.title} className="w-full" />
@@ -118,21 +200,21 @@ const FeedsPage = () => {
               <div className="flex items-center justify-between mb-2">
                 <div className="flex items-center gap-3">
                   <img
-                    src={post.author.avatar?.url}
+                    src={post.author.avatar?.url || image}
                     alt={post.author.name}
                     className="w-9 h-9 rounded-full"
                   />
                   <div>
-                    <p className="font-semibold">{post.author.name}</p>
+                    <p className="font-semibold">{post.author.name} <span className="text-gray-400 text-sm ml-2">{post.author._id === userDetails._id && "You"}</span></p>
                     <p className="text-sm opacity-70">@ {post.author.username}</p>
                   </div>
                 </div>
 
                 <button
-                  className={`btn btn-sm ${post.author.isFollowing ? "btn-outline" : "btn-primary"}`}
-                  onClick={followBtn}
+                  className={`btn btn-sm ${post.author.followers.includes(userDetails?._id) ? "btn-outline" : "btn-primary"}`}
+                  onClick={()=>followBtn(post.author)}
                 >
-                  {post.author.isFollowing ? "Following" : "Follow"}
+                  {post.author.followers.includes(userDetails?._id) ? "Following" : "Follow"}
                 </button>
               </div>
 
@@ -140,9 +222,43 @@ const FeedsPage = () => {
               <h2 className="text-xl font-bold">{post.title}</h2>
               <p className="opacity-80">{post.content}</p>
 
-              <p className="text-xs opacity-60 mt-2">{post.createdAt}</p>
+              <p className="text-xs opacity-60 mt-2">{timeAgo(post.createdAt)}</p>
 
-              <div className="flex items-center gap-4 mt-2">
+              {userDetails._id === post.author._id || userDetails.isAdmin ? (
+              <div className="dropdown dropdown-right absolute right-2 bottom-8 z-20">
+
+                {/* Trigger Button */}
+                <button tabIndex={0} className="btn btn-sm btn-ghost">
+                  <Ellipsis size={20} />
+                </button>
+
+                {/* Dropdown Menu */}
+                <ul tabIndex={0} className="dropdown-content menu p-2 shadow bg-base-100 rounded-xl w-40">
+
+                  <li>
+                    <button onClick={()=>editBlogHandler(post._id)} className="flex items-center gap-2">
+                      <Edit size={16} /> Edit
+                    </button>
+                  </li>
+
+                  <li>
+                    <button onClick={()=>deleteBlogHandler(post._id)} className="text-red-500 flex items-center gap-2">
+                      <Trash size={16}/> Delete
+                    </button>
+                  </li>
+
+                </ul>
+              </div>
+
+            ):null}
+
+              <div className="card-actions justify-end">
+                <Link to={`/post/${post._id}`} className="btn btn-link p-0">
+                  Read more →
+                </Link>
+              </div>
+
+              <div className="flex items-center gap-4 ">
                 {/* Like */}
                 <button
                   className="btn btn-ghost btn-sm flex items-center gap-1"
@@ -153,17 +269,21 @@ const FeedsPage = () => {
                 </button>
 
                 {/* Comments */}
-                <Link to={`/post/${post._id}`} className="btn btn-ghost btn-sm flex items-center gap-1">
+                <button className="btn btn-ghost btn-sm flex items-center gap-1" onClick={()=>{
+                  commentsHandler(post._id),
+                  setOpenCommentsId(openCommentsId === post._id ? null : post._id)
+                }}>
                   <MessageCircle size={18} />
                   {post.comments?.length}
-                </Link>
+                </button>
               </div>
+              {openCommentsId === post._id && (
+                  <div>
+                    <CommentsCard commentData={commentData} blogId={post._id}
+                      userDetails={userDetails}/>
+                  </div>
+                )}
 
-              <div className="card-actions justify-end">
-                <Link to={`/post/${post._id}`} className="btn btn-link p-0">
-                  Read more →
-                </Link>
-              </div>
             </div>
           </div>
             )

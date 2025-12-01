@@ -59,13 +59,15 @@ export const deleteComment = asyncHandler(async (req,res) => {
     res.status(200).json({message:"Comment deleted"});
 });
 
+
+
 export const getAllComment = asyncHandler(async (req,res) => {
 
     const blogId = req.params.blogId;
 
-    const getAllComm = await Comments.find({ blog:blogId }).populate("author","name username");
+    const getAllComm = await Comments.find({ blog:blogId }).populate("author","name username avatar");
 
-    if(getAllComm.length === 0) return res.status(404).json({message:"No comments found"});
+    if(getAllComm.length === 0) return res.status(200).json({message:"No comments found",getAllComm:[]});
 
     res.status(200).json({message:"All Comments",getAllComm});
 });

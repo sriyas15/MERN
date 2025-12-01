@@ -104,6 +104,9 @@ export const getProfile = asyncHandler(async(req,res) => {
         email: req.user.email,
         username: req.user.username,
         avatar: req.user.avatar,
+        bio:req.user.bio,
+        followers:req.user.followers,
+        following:req.user.following,
         isAdmin: req.user.isAdmin
     }
 
@@ -118,51 +121,54 @@ export const getUsers = asyncHandler(async (req,res) => {
 });
 
 
-export const updateUser = asyncHandler(async (req,res) => {
+export const updateUser = asyncHandler(async (req, res) => {
+  const user = await Users.findById(req.params.id);
 
-    const user = await Users.findById(req.params.id);
+  if (!user)
+    return res.status(404).json({ message: "User not Found to update" });
 
-    if(!user)
-        return res.status(404).json({message:"User not Found to update"});
+  if (req.user.id !== req.params.id && !req.user.isAdmin)
+    return res.status(403).json({ message: "Not authorized" });
 
-    if (req.user.id !== req.params.id && !req.user.isAdmin)
-        return res.status(403).json({ message: "Not authorized" });
-    
-    user.name = req.body.name ?? user.name;
-    user.email = req.body.email ?? user.email;
-    user.username = req.body.username ?? user.username;
-    user.bio = req.body.bio ?? user.bio;
+  user.name = req.body.name ?? user.name;
+  user.email = req.body.email ?? user.email;
+  user.username = req.body.username ?? user.username;
+  user.bio = req.body.bio ?? user.bio;
 
-    if(req.body.password)
-        user.password = await bcrypt.hash(req.body.password,10);
+  if (req.body.password) {
+    user.password = await bcrypt.hash(req.body.password, 10);
+  }
 
-    if(req.file){
-        if(user.avatar?.public_id)
-            cloudinary.uploader.destroy(user.avatar.public_id);
+  // AVATAR UPDATE 
+  if (req.file) {
+    // delete previous avatar
+    if (user.avatar?.public_id) 
+      await cloudinary.uploader.destroy(user.avatar.public_id);
 
-        const uploadResult = cloudinary.uploader.upload_stream({folder:"blog/avatars"},(error,result)=>{
+    // upload new avatar
+    const result = await new Promise((resolve, reject) => {
+      const upload = cloudinary.uploader.upload_stream(
+        { folder: "blog/avatars" },
+        (err, uploaded) => {
+          if (err) reject(err);
+          else resolve(uploaded);
+        }
+      );
+      upload.end(req.file.buffer);
+    });
 
-            if(error)
-                throw new Error("There is some error in uploading user avatar");
+    user.avatar = {
+      public_id: result.public_id,
+      url: result.secure_url,
+    };
+  }
 
-            user.avatar = {
-                public_id:result.public_id,
-                url:result.secure_url
-            };
+  const updatedUser = await user.save();
+  updatedUser.password = undefined;
 
-            user.save();
-            return res.status(200).json({ message: "Profile updated", user });
-        });
-
-        uploadResult.end(req.file.buffer);
-        return;
-    }
-
-    const updatedUser = await user.save();
-    updatedUser.password = undefined; // preventing password from sending as response
-
-    res.status(200).json({message:`User ${req.params.id} account Updated successfully`,updatedUser});
+  res.status(200).json({success: true,message: "Profile updated",updatedUser,});
 });
+
 
 
 export const toggleFollower = asyncHandler(async (req,res) => {

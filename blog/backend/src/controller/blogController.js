@@ -78,12 +78,13 @@ export const deleteBlog = asyncHandler(async (req,res) => {
 
 export const getAllBlogs = asyncHandler(async (req,res) => {
 
-        const getAll = await Blogs.find().populate("author","name username avatar")
+        const getAll = await Blogs.find().populate("author","name username avatar followers _id")
 
         if( !getAll || getAll.length === 0 ) return res.status(404).json({message:"No Blogs are posted yet"});
         
         res.status(200).json({message:"All Blogs",getAll});
 });
+
 
 export const toggleLike = asyncHandler(async (req,res) => {
 
