@@ -6,8 +6,14 @@ import './App.css'
 import HomePage from './pages/HomePage'
 import AfterRegistraion from './pages/AfterRegistraion'
 import FeedsPage from './pages/FeedsPage'
-import UserProfile from './pages/UserProfile'
 import PostBlog from './components/PostBlog'
+import UserProfileUpdate from './pages/UserProfileUpdate'
+import ProfilePage from './pages/ProfilePage'
+import Followers from './pages/Followers'
+import Following from './pages/Following'
+import ReadBlog from './pages/ReadBlog'
+import OthersProfile from './pages/OthersProfile'
+import AllUsersPage from './pages/AllUsersPage'
 
 function App() {
 
@@ -15,15 +21,22 @@ function App() {
     <>
     <Routes>
       <Route path='/' element={<HomePage/>}/>
+      <Route path='/admin/allUsers' element={<AllUsersPage/>}/>
       <Route path='/post' element={<PostBlog/>}/>
       <Route path='/login' element={<LoginPage/>}/>
       <Route path='/signup' element={<SignUp/>}/>
       <Route path='/userDetails' element={<AfterRegistraion/>}/>
       <Route path='/feeds' element={<FeedsPage/>}/>
-      <Route path='/profile' element={<UserProfile/>}/>
+      <Route path='/feeds/blog/:id' element={<ReadBlog/>}/>
+      <Route path='/profile' element={<OthersProfile/>}/>
+      <Route path='/my-profile' element={<ProfilePage/>}/>
+      <Route path='/my-profile/update' element={<UserProfileUpdate/>}/>
+      <Route path='/profile/followers' element={<Followers/>}/>
+      <Route path='/profile/following' element={<Following/>}/>
     </Routes>
     </>
   )
 }
+
 
 export default App

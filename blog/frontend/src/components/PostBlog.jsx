@@ -1,9 +1,11 @@
 import { useState } from "react";
 import ReactQuill from "react-quill-new";
+import Quill from "react-quill-new";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import "react-quill-new/dist/quill.snow.css";
 import { usePostBlogMutation } from "../features/blog/blogApiSlice";
+
 
 const PostBlog = () => {
   const [title, setTitle] = useState("");

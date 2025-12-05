@@ -71,14 +71,25 @@ export const deleteBlog = asyncHandler(async (req,res) => {
         if (del.coverImage?.public_id) {
                 await cloudinary.uploader.destroy(del.coverImage.public_id);
         }
-
         await del.deleteOne();
         res.status(200).json({message:"Blog deleted"});
+
 });
 
 export const getAllBlogs = asyncHandler(async (req,res) => {
 
-        const getAll = await Blogs.find().populate("author","name username avatar followers _id")
+        const getAll = await Blogs.find().populate({path: "author",select: "name username avatar followers following bio",
+                        populate: [
+                  {
+                        path: "followers",
+                        select: "name username avatar _id"
+                  },
+                  {
+                        path: "following",
+                        select: "name username avatar _id"
+                  }
+                  ]
+                  });
 
         if( !getAll || getAll.length === 0 ) return res.status(404).json({message:"No Blogs are posted yet"});
         

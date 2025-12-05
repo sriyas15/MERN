@@ -1,21 +1,10 @@
-import { ArrowRight, PenTool, Users, Newspaper, Link } from "lucide-react";
+import { ArrowRight, PenTool, Users, Newspaper } from "lucide-react";
 
 
  const HomePage = ()=>{
 
   return (
     <div className="min-h-screen bg-base-100 text-base-content">
-      {/* Navbar */}
-      <nav className="navbar px-6 py-4 shadow-sm bg-base-100">
-        <div className="flex-1">
-          <a className="text-2xl font-bold text-primary">MyBlog</a>
-        </div>
-        <div className="flex gap-3">
-          <a href="/login" className="btn btn-ghost">Login</a>
-          <a href="/signup" className="btn btn-primary">Sign Up</a>
-        </div>
-      </nav>
-
       {/* Hero Section */}
       <section className="hero min-h-[70vh]">
         <div className="hero-content flex-col lg:flex-row-reverse">

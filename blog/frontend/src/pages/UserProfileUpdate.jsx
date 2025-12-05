@@ -4,7 +4,7 @@ import { useLocation } from "react-router-dom";
 import toast from "react-hot-toast";
 import { useGetProfileQuery,useUpdateUserMutation } from "../features/auth/authApiSlice";
 
-const UserProfile = () => {
+const UserProfileUpdate = () => {
   const { data: getProfile, isLoading: profileLoading } = useGetProfileQuery();
   const { state } = useLocation();
 
@@ -112,25 +112,6 @@ const UserProfile = () => {
 
         <h1 className="text-2xl font-bold mt-4">{profileUser?.name}</h1>
         <p className="text-sm text-gray-500">@{profileUser?.username}</p>
-      </div>
-
-      {/* FOLLOWERS / FOLLOWING */}
-      <div className="mt-6 grid grid-cols-2 gap-4 text-center">
-        <div className="bg-base-100 p-4 rounded-xl shadow">
-          <Users className="mx-auto" />
-          <h1 className="text-xl font-bold">
-            {getProfile?.user?.followers?.length || 0}
-          </h1>
-          <p className="text-sm">Followers</p>
-        </div>
-
-        <div className="bg-base-100 p-4 rounded-xl shadow">
-          <Users className="mx-auto" />
-          <h1 className="text-xl font-bold">
-            {getProfile?.user?.following?.length || 0}
-          </h1>
-          <p className="text-sm">Following</p>
-        </div>
       </div>
 
       {/* EDIT FORM */}
@@ -250,4 +231,4 @@ const UserProfile = () => {
   );
 };
 
-export default UserProfile;
+export default UserProfileUpdate;

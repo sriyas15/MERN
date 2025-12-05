@@ -6,6 +6,7 @@ import { BrowserRouter } from 'react-router-dom'
 import { Toaster } from "react-hot-toast"
 import { Provider } from "react-redux";
 import { store } from './app/store.js'
+import NavBar from './components/NavBar.jsx'
 
 
 createRoot(document.getElementById('root')).render(
@@ -14,6 +15,7 @@ createRoot(document.getElementById('root')).render(
     <Provider store={store}>
 
       <BrowserRouter>
+          <NavBar/>
           <App />
           <Toaster/>
       </BrowserRouter>

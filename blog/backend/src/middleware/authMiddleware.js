@@ -11,10 +11,15 @@ export const protect = async (req,res,next) => {
     try {
         
         const decode = jwt.verify(token,process.env.JWT_SECRET_KEY);
-        req.user = await Users.findById(decode._id).select("-password");
+        const user = await Users.findById(decode._id).select("-password")
+                    .populate("followers","name username avatar _id")
+                    .populate("following","name username avatar _id")
 
-        if(!req.user)
+        if(!user)
             return res.status(401).json({message:"Not Authorized ,No user found"});
+
+        req.user = user;
+        
         next();
 
     } catch (error) {

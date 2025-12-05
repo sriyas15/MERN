@@ -121,6 +121,7 @@ export const getUsers = asyncHandler(async (req,res) => {
 });
 
 
+
 export const updateUser = asyncHandler(async (req, res) => {
   const user = await Users.findById(req.params.id);
 

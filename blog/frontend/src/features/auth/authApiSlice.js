@@ -19,9 +19,13 @@ export const authApiSlice = apiSlice.injectEndpoints({
             })
         }),
 
-        getProfile:builder.query({
-            query:()=> `/users/profile`,
+        getAllUsers:builder.query({
+            query:()=>`/users/allUsers`,
             providesTags:["Users"]
+        }),
+
+        getProfile:builder.query({
+            query:()=> `/users/profile`
         }),
 
         updateUser:builder.mutation({
@@ -48,6 +52,14 @@ export const authApiSlice = apiSlice.injectEndpoints({
                 method:"PUT"
             }),
             invalidatesTags:["Blogs"]
+        }),
+
+        deleteUser:builder.mutation({
+            query:(id)=>({
+                url:`/users/${id}`,
+                method:"DELETE"
+            }),
+            invalidatesTags:["Users"]
         })
         
     }),
@@ -55,5 +67,6 @@ export const authApiSlice = apiSlice.injectEndpoints({
 
 export const { useSignupMutation,useLoginMutation,
             useUpdateUserMutation,useLogoutMutation,
-            useFollowMutation,useGetProfileQuery } = authApiSlice
+            useFollowMutation,useGetProfileQuery,
+            useGetAllUsersQuery,useDeleteUserMutation } = authApiSlice
             

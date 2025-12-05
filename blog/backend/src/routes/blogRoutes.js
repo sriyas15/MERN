@@ -3,6 +3,7 @@ import { deleteBlog, getAllBlogs, toggleLike, updateBlog, uploadBlog } from '../
 import { protect } from '../middleware/authMiddleware.js';
 import { upload } from "../middleware/multer.js"
 
+
 const router = express.Router();
 
 router.post("/post",protect,upload.single("coverImage"),uploadBlog);
