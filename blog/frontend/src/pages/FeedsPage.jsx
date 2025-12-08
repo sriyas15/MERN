@@ -1,11 +1,11 @@
 
 import { useState } from "react";
 import { MessageCircle, Heart, Ellipsis, Edit, Trash } from "lucide-react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { useDeleteBlogMutation, useEditBlogMutation, useGetBlogsQuery, useToggleLikeMutation } from '../features/blog/blogApiSlice';
 import toast from "react-hot-toast";
 import { useLazyGetCommentsQuery } from "../features/comments/commentsApiSlice";
-import { useFollowMutation } from "../features/auth/authApiSlice";
+import { useFollowMutation, useGetProfileQuery } from "../features/auth/authApiSlice";
 import CommentsCard from "../components/CommentsCard";
 import { timeAgo } from "../utils/timeAgo";
 
@@ -15,6 +15,7 @@ const FeedsPage = () => {
 
   //User RTK Quries
   const [ follow,{followLoads} ] = useFollowMutation();
+  const { data: getProfile, isLoading: profileLoading } = useGetProfileQuery(); 
 
   //Blog RTK Querie
   const { data: blogs, isLoading, isError } = useGetBlogsQuery();
@@ -24,21 +25,21 @@ const FeedsPage = () => {
   //Coment RTK Queries
   const [ triggerComment,{ data:commentData, isLoading:commentsLoading } ] = useLazyGetCommentsQuery();
 
-  const userDetails = JSON.parse(localStorage.getItem("user"));
+  const userDetails = getProfile?.user;
   console.log(blogs);
 
   const image = "https://cdn-icons-png.flaticon.com/512/552/552721.png";
 
-  const blogData = blogs?.getAll;
+  const blogData = (blogs?.getAll);
 
-  const [ toggleLike ] = useToggleLikeMutation()
+  const [ toggleLike ] = useToggleLikeMutation();
 
   const followBtn = async(blogAuthor)=>{
 
     try {
       
       const followData = await follow(blogAuthor._id).unwrap();
-      console.log(userDetails)
+      console.log(followData)
       if(followData.message === "Following")
         toast.success(`${blogAuthor.name} added to following list`);
 
@@ -76,16 +77,6 @@ const FeedsPage = () => {
     }
   }
 
-  const editBlogHandler = async(id)=>{
-
-    try {
-      
-    } catch (error) {
-      
-    }
-    
-  }
-
   const deleteBlogHandler = async(id)=>{
 
     if(!window.confirm("Are you sure want to delete the blog?"))
@@ -111,6 +102,7 @@ const FeedsPage = () => {
         {blogData?.map((post) => {
 
             const isLiked = post.likes?.includes(userDetails?._id);
+            const isFollowing = userDetails?.following?.includes(post.author._id);
 
             return (
           <div key={post._id}
@@ -132,17 +124,17 @@ const FeedsPage = () => {
                       className="w-9 h-9 rounded-full"
                     />
                     <div>
-                      <p className="font-semibold">{post.author.name} <span className="text-gray-400 text-sm ml-2">{post.author._id === userDetails._id && "You"}</span></p>
+                      <p className="font-semibold">{post.author.name} <span className="text-gray-400 text-sm ml-2">{post?.author?._id === userDetails._id && "You"}</span></p>
                       <p className="text-sm opacity-70">@ {post.author.username}</p>
                     </div>
                   </div>
                 </Link>
 
                 <button
-                  className={`btn btn-sm ${post.author.followers.includes(userDetails?._id) ? "btn-outline" : "btn-primary"}`}
+                  className={`btn btn-sm ${isFollowing ? "btn-outline" : "btn-primary"}`}
                   onClick={()=>followBtn(post.author)}
                 >
-                  {post.author.followers.includes(userDetails?._id) ? "Following" : "Follow"}
+                  {isFollowing ? "Following" : "Follow"}
                 </button>
               </div>
 
@@ -166,9 +158,9 @@ const FeedsPage = () => {
                 <ul tabIndex={0} className="dropdown-content menu p-2 shadow bg-base-100 rounded-xl w-40">
 
                   <li>
-                    <button onClick={()=>editBlogHandler(post._id)} className="flex items-center gap-2">
+                    <Link to={"/edit-blog"} state={{post}} className="flex items-center gap-2">
                       <Edit size={16} /> Edit
-                    </button>
+                    </Link>
                   </li>
 
                   <li>
@@ -189,11 +181,10 @@ const FeedsPage = () => {
               </div>
 
               <div className="flex items-center gap-4 ">
+
                 {/* Like */}
-                <button
-                  className="btn btn-ghost btn-sm flex items-center gap-1"
-                  onClick={() => toggleLikeBtn(post._id)}
-                >
+                <button className="btn btn-ghost btn-sm flex items-center gap-1"
+                  onClick={() => toggleLikeBtn(post._id)}>
                   <Heart size={18} fill={isLiked ? "red" : "none"} strokeWidth={2}/>
                   {post.likes?.length}  
                 </button>

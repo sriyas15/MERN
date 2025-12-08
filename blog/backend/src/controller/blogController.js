@@ -76,6 +76,7 @@ export const deleteBlog = asyncHandler(async (req,res) => {
 
 });
 
+
 export const getAllBlogs = asyncHandler(async (req,res) => {
 
         const getAll = await Blogs.find().populate({path: "author",select: "name username avatar followers following bio",

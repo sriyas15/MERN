@@ -96,6 +96,7 @@ export const logout = asyncHandler(async(req,res) => {
 });
 
 
+
 export const getProfile = asyncHandler(async(req,res) => {
 
     const user = {
@@ -197,7 +198,18 @@ export const toggleFollower = asyncHandler(async (req,res) => {
     await loggedInUser.save();
     await usertoFollow.save();
 
-    res.status(200).json({message: isFollowing ? "Unfollowed" : "Following",following:loggedInUser.following.length});
+    const updatedUser = await Users.findById(usertoFollow._id)
+    .select("name username avatar followers following")
+    .populate("followers", "name username avatar")
+    .populate("following", "name username avatar");
+
+  const updatedLoggedUser = await Users.findById(loggedInUser._id)
+    .select("name username avatar followers following");
+
+  res.status(200).json({message: isFollowing ? "Unfollowed" : "Following",
+    updatedUser,
+    updatedLoggedUser
+  });
 });
 
 export const deleteUser = asyncHandler(async (req,res) => {

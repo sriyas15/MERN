@@ -1,22 +1,36 @@
 import { Link, useLocation } from "react-router-dom";
 import { Users, Edit, FileText,Rss, Heart } from "lucide-react";
 import { useDeleteBlogMutation, useEditBlogMutation, useGetBlogsQuery, useToggleLikeMutation } from '../features/blog/blogApiSlice';
+import { useGetProfileQuery } from "../features/auth/authApiSlice";
 
 const OthersProfile = () => {
 
   const location = useLocation();
   const { user } = location.state || {};
-  console.log(user);
 
+  const { data:getProfile } = useGetProfileQuery();
   const { data: blogs, isLoading, isError } = useGetBlogsQuery();
+  const [ toggleLike ] = useToggleLikeMutation();
+
   const len = blogs?.getAll ? blogs.getAll.filter((post)=>post.author._id === user._id).length : 0;
+  const loggedUser = getProfile?.user;
 
   const followers = user?.followers;
   const following = user?.following;
 
   const defaultAvatar = "https://cdn-icons-png.flaticon.com/512/552/552721.png";
+
+  const toggleLikeBtn = async(id)=>{
+
+    try {
+         const likedMsg = await toggleLike(id).unwrap();
+    
+        } catch (error) {
+          console.log("Like Button failed");
+          toast.error(error?.data?.message || "Like button failed");
+        }
+  }
   
-//   if (profileLoading) return <div className="flex justify-center mt-10">Loading...</div>;
 
   return (
     <div className="max-w-4xl mx-auto p-4">
@@ -67,25 +81,33 @@ const OthersProfile = () => {
       </div>
 
       {/* BLOG LIST */}
-      <div className="relative mt-8">
+      <div className="mt-8">
         <h3 className="text-xl font-semibold mb-3 flex items-center gap-2">
           <FileText size={20} /> Blogs by {user.name}
         </h3>
 
           {blogs?.getAll
             ?.filter((post) => post.author._id === user._id)
-            .map((post) => (
-              <>
-               <Link to={`/feeds/blog/${post._id}`} key={post._id} state={{blog:post}}
-                className="card bg-base-100 shadow-md p-5 hover:shadow-lg transition mb-3">
-                <h4 className="text-lg font-bold">{post.title}</h4>
-                <div className="opacity-80 text-gray-600 mt-1 line-clamp-2" dangerouslySetInnerHTML={{ __html: post.content }}>
-                
-              </div>
-              </Link>
-              <button className="absolute right-0 bottom-0"><Heart/></button>
-              </>
-            ))
+            .map((post) => {
+              
+              const isLiked = post.likes.includes(loggedUser._id);
+
+               return (
+                <div className="relative">
+                <Link to={`/feeds/blog/${post._id}`} key={post._id} state={{blog:post}}
+                  className="card bg-base-100 shadow-md p-5 hover:shadow-lg transition mb-3">
+                  <h4 className="text-lg font-bold">{post.title}</h4>
+                  <div className="opacity-80 text-gray-600 mt-1 line-clamp-2" dangerouslySetInnerHTML={{ __html: post.content }}>
+                  </div>
+                  
+                </Link>
+                <button className="absolute right-7 bottom-5 flex items-center gap-1" onClick={()=>toggleLikeBtn(post._id)}>
+                  <Heart size={18} fill={isLiked ? "red" : "none"} strokeWidth={2}/> {post.likes.length}
+                </button>
+               </div>
+               )
+              
+              })
           }
 
           {blogs?.getAll?.filter((post) => post.author._id === user._id).length === 0 && (

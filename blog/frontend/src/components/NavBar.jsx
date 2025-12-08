@@ -1,13 +1,19 @@
 import { Link, useNavigate } from "react-router-dom"
-import { Moon, Sun, LogOut, User, Menu } from "lucide-react";
+import { Moon, Sun, Dessert, TreePine, LogOut, User, Menu } from "lucide-react";
 import { useLogoutMutation } from "../features/auth/authApiSlice";
 import toast from "react-hot-toast";
-import { useState } from "react";
-
+import { useEffect, useState } from "react";
 
 const NavBar = () => {
 
-  const [openMenu, setOpenMenu] = useState(false);
+  const [ openMenu, setOpenMenu ] = useState(false);
+  const [ themeMenu, setThemeMenu ] = useState(false);
+  const [ theme,setTheme ] = useState("cupcake");
+
+  useEffect(()=>{
+    const themeFrmStrg = JSON.parse(localStorage.getItem("theme")) || "cupcake";
+    document.documentElement.setAttribute("data-theme",themeFrmStrg);
+  },[])
 
   const userDetails = JSON.parse(localStorage.getItem("user"));
 
@@ -34,7 +40,24 @@ const NavBar = () => {
     }
   }
 
-  const toggleTheme = ()=>{}
+  const CurrentTheme = ()=>{
+
+    const themeFrmStrg = JSON.parse(localStorage.getItem("theme")) || "cupcake"
+    
+      if(themeFrmStrg === "light") return <Sun className="text-yellow-500"/>
+      else if(themeFrmStrg === "cupcake") return <Dessert className="text-pink-600"/>
+      else if(themeFrmStrg === "dark") return <Moon className="text-gray-400"/>
+      else if(themeFrmStrg === "forest") return <TreePine className="text-green-600"/>
+    
+  }
+
+  const toggleTheme = (newTheme)=>{
+    setTheme(newTheme)
+    document.documentElement.setAttribute("data-theme",newTheme);
+    localStorage.setItem("theme",JSON.stringify(newTheme));
+
+    setThemeMenu(false);
+  }
 
   return (
     <div className="bg-base-100">
@@ -53,9 +76,23 @@ const NavBar = () => {
           <Link className="btn btn-ghost btn-sm" to={"/post"}>Post</Link>
 
           {/* ✅ Theme toggle */}
-          <button onClick={toggleTheme} className="btn btn-ghost btn-sm">
-            Themes
-          </button>
+          
+
+          <div className="dropdown dropdown-end">
+
+            <button onClick={()=>setThemeMenu(!themeMenu)} className="btn btn-ghost btn-sm" tabIndex={0}>
+               Themes <CurrentTheme/>
+            </button>
+
+            {themeMenu && (
+              <ul className="menu dropdown-content bg-base-100 rounded-xl shadow p-2 mt-3 w-40 z-50">
+              <li><button className="text-yellow-500" onClick={()=>toggleTheme("light")}><Sun/> Light</button></li>
+              <li><button className="text-pink-600" onClick={()=>toggleTheme("cupcake")}><Dessert/> Cupcake</button></li>
+              <li><button className="text-gray-400" onClick={()=>toggleTheme("dark")}><Moon/> Dark</button></li>
+              <li><button className="text-green-600" onClick={()=>toggleTheme("forest")}><TreePine/> Forest</button></li>
+            </ul>
+            )}
+          </div>
 
           {/* ✅ User Menu */}
           <div className="dropdown dropdown-end">

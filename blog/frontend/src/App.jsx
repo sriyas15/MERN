@@ -14,6 +14,7 @@ import Following from './pages/Following'
 import ReadBlog from './pages/ReadBlog'
 import OthersProfile from './pages/OthersProfile'
 import AllUsersPage from './pages/AllUsersPage'
+import EditBlogPage from './pages/EditBlogPage'
 
 function App() {
 
@@ -23,6 +24,7 @@ function App() {
       <Route path='/' element={<HomePage/>}/>
       <Route path='/admin/allUsers' element={<AllUsersPage/>}/>
       <Route path='/post' element={<PostBlog/>}/>
+      <Route path='/edit-blog' element={<EditBlogPage/>}/>
       <Route path='/login' element={<LoginPage/>}/>
       <Route path='/signup' element={<SignUp/>}/>
       <Route path='/userDetails' element={<AfterRegistraion/>}/>

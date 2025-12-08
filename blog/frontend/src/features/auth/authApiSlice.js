@@ -25,7 +25,8 @@ export const authApiSlice = apiSlice.injectEndpoints({
         }),
 
         getProfile:builder.query({
-            query:()=> `/users/profile`
+            query:()=> `/users/profile`,
+            providesTags:["Users"]
         }),
 
         updateUser:builder.mutation({
@@ -48,10 +49,10 @@ export const authApiSlice = apiSlice.injectEndpoints({
 
         follow:builder.mutation({
             query:(userToFollowId)=>({
-                url:`/users/${userToFollowId}/follow`,
+                url:`/users/follow/${userToFollowId}`,
                 method:"PUT"
             }),
-            invalidatesTags:["Blogs"]
+            invalidatesTags:["Blogs","Users"]
         }),
 
         deleteUser:builder.mutation({
@@ -61,6 +62,7 @@ export const authApiSlice = apiSlice.injectEndpoints({
             }),
             invalidatesTags:["Users"]
         })
+
         
     }),
 });

@@ -1,7 +1,12 @@
 import { ArrowRight, PenTool, Users, Newspaper } from "lucide-react";
+import LoggedInHome from "./LoggedInHome";
 
 
  const HomePage = ()=>{
+
+  const user = JSON.parse(localStorage.getItem("user"));
+
+  if(user) return <LoggedInHome/>;
 
   return (
     <div className="min-h-screen bg-base-100 text-base-content">

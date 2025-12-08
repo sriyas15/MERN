@@ -7,6 +7,7 @@ const ProfilePage = () => {
 
   const { data: getProfile, isLoading: profileLoading } = useGetProfileQuery();
   const { data: blogs, isLoading, isError } = useGetBlogsQuery();
+  
   const len = blogs?.getAll ? blogs.getAll.filter((post)=>post.author._id === getProfile?.user?._id).length : 0;
   console.log(getProfile?.user)
   const loggedInUser = JSON.parse(localStorage.getItem("user")); 

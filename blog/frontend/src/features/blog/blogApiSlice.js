@@ -18,8 +18,9 @@ export const blogApiSlice = apiSlice.injectEndpoints({
             invalidatesTags:["Blogs"]
         }),
 
+
         editBlog:builder.mutation({
-            query:(blogId,formData)=>({
+            query:({blogId,formData})=>({
                 url:`/blogs/${blogId}`,
                 method:"PUT",
                 body:formData

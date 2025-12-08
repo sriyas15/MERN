@@ -13,6 +13,6 @@ router.get("/profile",protect,getProfile);
 router.get("/allUsers",protect,admin,getUsers);
 router.route("/:id").put(protect,upload.single("avatar"),updateUser).delete(protect,admin,deleteUser);
 
-router.put("/:id/follow",protect,toggleFollower)
+router.put("/follow/:id",protect,toggleFollower)
 
 export default router;
