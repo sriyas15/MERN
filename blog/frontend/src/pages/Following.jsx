@@ -1,11 +1,10 @@
 import { useLocation, Link } from "react-router-dom";
+import defaultAvatar from "../assets/defaultAvatar.png"
 
 const Following = () => {
   const location = useLocation();
   const following = location.state?.following || [];
   
-  const defaultImage = "https://cdn-icons-png.flaticon.com/512/552/552721.png";
-
   return (
     <div className="min-h-screen bg-base-100 py-6">
       <h1 className="text-center text-2xl font-bold text-primary mb-6">
@@ -31,7 +30,7 @@ const Following = () => {
             >
               <img
                 className="w-16 h-16 rounded-full ring ring-primary/40"
-                src={person?.avatar?.url || defaultImage}
+                src={person?.avatar?.url || defaultAvatar}
                 alt={person.name}
               />
 

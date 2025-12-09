@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { Users, Edit, FileText,Rss } from "lucide-react";
 import { useGetProfileQuery } from "../features/auth/authApiSlice";
+import defaultAvatar from "../assets/defaultAvatar.png"
 import { useDeleteBlogMutation, useEditBlogMutation, useGetBlogsQuery, useToggleLikeMutation } from '../features/blog/blogApiSlice';
 
 const ProfilePage = () => {
@@ -9,7 +10,6 @@ const ProfilePage = () => {
   const { data: blogs, isLoading, isError } = useGetBlogsQuery();
   
   const len = blogs?.getAll ? blogs.getAll.filter((post)=>post.author._id === getProfile?.user?._id).length : 0;
-  console.log(getProfile?.user)
   const loggedInUser = JSON.parse(localStorage.getItem("user")); 
   const isOwner = loggedInUser?._id === getProfile?.user?._id;
 
@@ -30,7 +30,7 @@ const ProfilePage = () => {
           <div className="avatar">
             <div className="w-32 h-32 rounded-full ring ring-primary ring-offset-base-100 ring-offset-2">
               <img
-                src={getProfile?.user?.avatar.url || "/default-avatar.png"}
+                src={getProfile?.user?.avatar.url || defaultAvatar}
                 alt="avatar"
               />
             </div>

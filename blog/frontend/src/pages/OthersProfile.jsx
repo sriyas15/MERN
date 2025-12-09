@@ -2,6 +2,7 @@ import { Link, useLocation } from "react-router-dom";
 import { Users, Edit, FileText,Rss, Heart } from "lucide-react";
 import { useDeleteBlogMutation, useEditBlogMutation, useGetBlogsQuery, useToggleLikeMutation } from '../features/blog/blogApiSlice';
 import { useGetProfileQuery } from "../features/auth/authApiSlice";
+import defaultAvatar from "../assets/defaultAvatar.png"
 
 const OthersProfile = () => {
 
@@ -18,7 +19,6 @@ const OthersProfile = () => {
   const followers = user?.followers;
   const following = user?.following;
 
-  const defaultAvatar = "https://cdn-icons-png.flaticon.com/512/552/552721.png";
 
   const toggleLikeBtn = async(id)=>{
 

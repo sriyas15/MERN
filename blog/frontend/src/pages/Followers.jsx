@@ -1,11 +1,10 @@
 import { useLocation, Link } from "react-router-dom";
+import defaultAvatar from "../assets/defaultAvatar.png"
 
 const Followers = () => {
   const location = useLocation();
   const followers = location.state?.followers || [];
-console.log(followers)
-  const defaultImage = "https://cdn-icons-png.flaticon.com/512/552/552721.png";
-
+  
   return (
     <div className="min-h-screen bg-base-100 py-6">
       <h1 className="text-center text-2xl font-bold text-primary mb-6">
@@ -28,7 +27,7 @@ console.log(followers)
               <Link to={`/profile/${person._id}`} key={person._id}
                 className="flex items-center gap-4 py-4 px-2 hover:bg-base-300 rounded-lg transition-all cursor-pointer">
                 <img className="w-16 h-16 rounded-full ring ring-primary/40"
-                  src={person?.avatar?.url || defaultImage} alt={person.name}/>
+                  src={person?.avatar?.url || defaultAvatar} alt={person.name}/>
 
                 <div>
                   <h2 className="text-lg font-semibold">{person.name}</h2>

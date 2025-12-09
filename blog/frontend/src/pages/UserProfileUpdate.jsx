@@ -3,6 +3,7 @@ import { Camera,User,Mail,Shield,Users,Eye,EyeOff,Edit } from "lucide-react";
 import { useLocation } from "react-router-dom";
 import toast from "react-hot-toast";
 import { useGetProfileQuery,useUpdateUserMutation } from "../features/auth/authApiSlice";
+import defaultAvatar from "../assets/defaultAvatar.png"
 
 const UserProfileUpdate = () => {
   const { data: getProfile, isLoading: profileLoading } = useGetProfileQuery();
@@ -18,8 +19,6 @@ const UserProfileUpdate = () => {
   const [editBtn, setEditBtn] = useState(false);
 
   const [updateUser, { isLoading }] = useUpdateUserMutation();
-
-  const defaultAvatar = "https://cdn-icons-png.flaticon.com/512/552/552721.png";
 
   // Editable fields
   const [name, setName] = useState("");

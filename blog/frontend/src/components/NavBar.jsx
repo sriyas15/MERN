@@ -97,7 +97,7 @@ const NavBar = () => {
           {/* ✅ User Menu */}
           <div className="dropdown dropdown-end">
 
-            <div tabIndex={0} role="button" className="avatar cursor-pointer">
+            <div tabIndex={0} role="button" onClick={()=>setOpenMenu(!openMenu)} className="avatar cursor-pointer">
 
               <div className="w-9 rounded-full ring ring-primary ring-offset-base-100 ring-offset-2">
                 <img src={userDetails?.avatar?.url || defaultAvatar} alt="User" />
@@ -105,7 +105,8 @@ const NavBar = () => {
 
             </div>
 
-            <ul tabIndex={0} className="menu dropdown-content bg-base-100 rounded-xl shadow p-2 mt-3 w-40">
+            {openMenu && (
+              <ul tabIndex={0} className="menu dropdown-content bg-base-100 rounded-xl shadow p-2 mt-3 w-40">
               <li>
                 <Link to="/my-profile" state={{userDetails}}>
                   <User size={16} /> Profile
@@ -117,14 +118,15 @@ const NavBar = () => {
                 </button>
               </li>
             </ul>
+            )}
           </div>
 
-          <button
+          {/* <button
             className="md:hidden btn btn-ghost btn-sm"
             onClick={() => setOpenMenu(!openMenu)}
           >
-            <Menu size={20} />
-          </button>
+            <Menu size={20} h/>
+          </button> */}
         </div>
         ):(
           <div className="flex gap-3">

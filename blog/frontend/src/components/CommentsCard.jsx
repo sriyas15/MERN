@@ -3,6 +3,7 @@ import { useDeleteCommentMutation, useEditCommentMutation, usePostCommentMutatio
 import toast from "react-hot-toast";
 import { timeAgo } from "../utils/timeAgo";
 import { Edit, Trash, Ellipsis } from "lucide-react";
+import defaultAvatar from "../assets/defaultAvatar.png"
 
 const CommentsCard = ({ commentData, blogId, userDetails }) => {
 
@@ -14,7 +15,6 @@ const CommentsCard = ({ commentData, blogId, userDetails }) => {
   const [deleteComment] = useDeleteCommentMutation();
 
   const isDisabled = !commentText.trim();
-  const image = "https://cdn-icons-png.flaticon.com/512/552/552721.png";
 
   // ⭐ For handling dropdown toggle
   const [openMenuId, setOpenMenuId] = useState(null);
@@ -77,7 +77,7 @@ const CommentsCard = ({ commentData, blogId, userDetails }) => {
           <div className="mb-8 border-b pb-6 relative" key={c._id}>
 
             {/* ⭐ Dots menu for owner */}
-            {userDetails.username === c.author.username && (
+            {(userDetails.username === c.author.username || userDetails.isAdmin) && (
               <div className="absolute right-2 top-2">
 
                 <button onClick={() => toggleMenu(c._id)}>
@@ -107,7 +107,7 @@ const CommentsCard = ({ commentData, blogId, userDetails }) => {
             {/* COMMENT CONTENT */}
             <div className="flex gap-3">
               <img
-                src={c.author.avatar?.url || image}
+                src={c.author.avatar?.url || defaultAvatar}
                 alt={c.author.name}
                 className="w-9 h-9 rounded-full"
               />

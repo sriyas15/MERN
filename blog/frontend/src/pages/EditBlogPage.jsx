@@ -10,7 +10,6 @@ const EditBlogPage = () => {
 
   const location = useLocation();
   const blog = location.state || {};
-  console.log(blog?.post);
 
   const [title, setTitle] = useState(blog?.post?.title);
   const [content, setContent] = useState(blog?.post?.content);
@@ -55,7 +54,6 @@ const EditBlogPage = () => {
     try {
       
       const res = await editBlog({blogId:blog?.post?._id,formData}).unwrap();
-      console.log(res)
       toast.success("Blog was updated");
       navigate("/feeds");
     } catch (error) {

@@ -1,69 +1,33 @@
 
 import { useState } from "react";
-import { MessageCircle, Heart, Ellipsis, Edit, Trash } from "lucide-react";
+import { MessageCircle } from "lucide-react";
 import { Link } from "react-router-dom";
-import { useDeleteBlogMutation, useEditBlogMutation, useGetBlogsQuery, useToggleLikeMutation } from '../features/blog/blogApiSlice';
+import { useGetBlogsQuery } from '../features/blog/blogApiSlice';
 import toast from "react-hot-toast";
 import { useLazyGetCommentsQuery } from "../features/comments/commentsApiSlice";
-import { useFollowMutation, useGetProfileQuery } from "../features/auth/authApiSlice";
+import { useGetProfileQuery } from "../features/auth/authApiSlice";
 import CommentsCard from "../components/CommentsCard";
 import { timeAgo } from "../utils/timeAgo";
+import defaultAvatar from "../assets/defaultAvatar.png"
+import BlogActions from "../components/BlogActions";
+import LikeButton from "../components/LikeButton";
+import FollowButton from "../components/FollowButton";
 
 const FeedsPage = () => {
 
   const [openCommentsId, setOpenCommentsId] = useState(null);
 
   //User RTK Quries
-  const [ follow,{followLoads} ] = useFollowMutation();
   const { data: getProfile, isLoading: profileLoading } = useGetProfileQuery(); 
 
   //Blog RTK Querie
   const { data: blogs, isLoading, isError } = useGetBlogsQuery();
-  const [ editBlog ] = useEditBlogMutation();
-  const [ deleteBlog ] = useDeleteBlogMutation();
 
   //Coment RTK Queries
   const [ triggerComment,{ data:commentData, isLoading:commentsLoading } ] = useLazyGetCommentsQuery();
 
   const userDetails = getProfile?.user;
-  console.log(blogs);
-
-  const image = "https://cdn-icons-png.flaticon.com/512/552/552721.png";
-
   const blogData = (blogs?.getAll);
-
-  const [ toggleLike ] = useToggleLikeMutation();
-
-  const followBtn = async(blogAuthor)=>{
-
-    try {
-      
-      const followData = await follow(blogAuthor._id).unwrap();
-      console.log(followData)
-      if(followData.message === "Following")
-        toast.success(`${blogAuthor.name} added to following list`);
-
-      else toast.success(`Unfollowed ${blogAuthor.name}`);
-      
-    } catch (error) {
-      console.log(`Error in following`);
-      toast.error(error?.data?.message);
-    }
-  }
-
-  const toggleLikeBtn = async(id)=>{
-
-    try {
-
-     const likedMsg = await toggleLike(id).unwrap();
-     console.log(likedMsg);
-
-    } catch (error) {
-      console.log("Like Button failed");
-      toast.error(error?.data?.message || "Like button failed");
-    }
-
-  }
 
   const commentsHandler = async(id)=>{
 
@@ -77,22 +41,6 @@ const FeedsPage = () => {
     }
   }
 
-  const deleteBlogHandler = async(id)=>{
-
-    if(!window.confirm("Are you sure want to delete the blog?"))
-      return;
-
-    try {
-      
-      await deleteBlog(id).unwrap();
-
-      toast.success("Blog Deleted");
-    } catch (error) {
-      console.log("Error in Deletion of Blog");
-      toast.error(error?.data?.message);
-    }
-  }
-
   return (
     <div className="min-h-screen bg-base-200">
 
@@ -100,9 +48,6 @@ const FeedsPage = () => {
       <div className="relative max-w-3xl mx-auto py-8 px-4 space-y-6">
 
         {blogData?.map((post) => {
-
-            const isLiked = post.likes?.includes(userDetails?._id);
-            const isFollowing = userDetails?.following?.includes(post.author._id);
 
             return (
           <div key={post._id}
@@ -119,7 +64,7 @@ const FeedsPage = () => {
                 <Link to={"/profile"} state={{user:post.author}}>
                   <div className="flex items-center gap-3">
                     <img
-                      src={post.author.avatar?.url || image}
+                      src={post.author.avatar?.url || defaultAvatar}
                       alt={post.author.name}
                       className="w-9 h-9 rounded-full"
                     />
@@ -130,12 +75,8 @@ const FeedsPage = () => {
                   </div>
                 </Link>
 
-                <button
-                  className={`btn btn-sm ${isFollowing ? "btn-outline" : "btn-primary"}`}
-                  onClick={()=>followBtn(post.author)}
-                >
-                  {isFollowing ? "Following" : "Follow"}
-                </button>
+                <FollowButton author={post.author} currentUser={userDetails}/>
+
               </div>
 
               {/* ✅ Blog Preview */}
@@ -146,32 +87,9 @@ const FeedsPage = () => {
 
               <p className="text-xs opacity-60 mt-2">{timeAgo(post.createdAt)}</p>
 
+              {/* Blog's Delete/Edit */}
               {userDetails._id === post.author._id || userDetails.isAdmin ? (
-              <div className="dropdown dropdown-right absolute right-2 bottom-8 z-20">
-
-                {/* Trigger Button */}
-                <button tabIndex={0} className="btn btn-sm btn-ghost">
-                  <Ellipsis size={20} />
-                </button>
-
-                {/* Dropdown Menu */}
-                <ul tabIndex={0} className="dropdown-content menu p-2 shadow bg-base-100 rounded-xl w-40">
-
-                  <li>
-                    <Link to={"/edit-blog"} state={{post}} className="flex items-center gap-2">
-                      <Edit size={16} /> Edit
-                    </Link>
-                  </li>
-
-                  <li>
-                    <button onClick={()=>deleteBlogHandler(post._id)} className="text-red-500 flex items-center gap-2">
-                      <Trash size={16}/> Delete
-                    </button>
-                  </li>
-
-                </ul>
-              </div>
-
+              <BlogActions blog={post} user={userDetails} />
             ):null}
 
               <div className="card-actions justify-end">
@@ -182,12 +100,8 @@ const FeedsPage = () => {
 
               <div className="flex items-center gap-4 ">
 
-                {/* Like */}
-                <button className="btn btn-ghost btn-sm flex items-center gap-1"
-                  onClick={() => toggleLikeBtn(post._id)}>
-                  <Heart size={18} fill={isLiked ? "red" : "none"} strokeWidth={2}/>
-                  {post.likes?.length}  
-                </button>
+                {/* Like Button Component*/}
+                <LikeButton blogId={post._id} initialLikes={post.likes} userId={userDetails?._id}/>
 
                 {/* Comments */}
                 <button className="btn btn-ghost btn-sm flex items-center gap-1" onClick={()=>{
