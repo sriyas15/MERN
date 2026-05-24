@@ -32,9 +32,7 @@ const FeedsPage = () => {
   const commentsHandler = async(id)=>{
 
     try {
-      
       await triggerComment(id).unwrap();
-
     } catch (error) {
       console.log("Error in fetching comments");
       toast.error(error?.data?.message);
@@ -45,7 +43,7 @@ const FeedsPage = () => {
     <div className="min-h-screen bg-base-200">
 
       {/* ✅ Feed */}
-      <div className="relative max-w-3xl mx-auto py-8 px-4 space-y-6">
+      <div className="max-w-3xl mx-auto py-8 px-4 space-y-6">
 
         {blogData?.map((post) => {
 
@@ -61,7 +59,7 @@ const FeedsPage = () => {
             <div className="card-body">
               {/* ✅ Author Info + Follow */}
               <div className="flex items-center justify-between mb-2">
-                <Link to={"/profile"} state={{user:post.author}}>
+                <Link to={`/profile/${post.author._id}`} state={{user:post.author}}>
                   <div className="flex items-center gap-3">
                     <img
                       src={post.author.avatar?.url || defaultAvatar}
@@ -69,31 +67,35 @@ const FeedsPage = () => {
                       className="w-9 h-9 rounded-full"
                     />
                     <div>
-                      <p className="font-semibold">{post.author.name} <span className="text-gray-400 text-sm ml-2">{post?.author?._id === userDetails._id && "You"}</span></p>
-                      <p className="text-sm opacity-70">@ {post.author.username}</p>
+                      <p className="font-semibold">{post?.author?.name} <span className="text-gray-400 text-sm ml-2">{post?.author?._id === userDetails?._id && "You"}</span></p>
+                      <p className="text-sm opacity-70">@ {post?.author?.username}</p>
                     </div>
                   </div>
                 </Link>
 
-                <FollowButton author={post.author} currentUser={userDetails}/>
+                <FollowButton author={post?.author} currentUser={userDetails}/>
 
               </div>
 
               {/* ✅ Blog Preview */}
               <h2 className="text-xl font-bold">{post.title}</h2>
-              <div className="opacity-80" dangerouslySetInnerHTML={{ __html: post.content }}>
+              <div className="opacity-80" dangerouslySetInnerHTML={{ __html: post?.content }}>
                 
               </div>
 
-              <p className="text-xs opacity-60 mt-2">{timeAgo(post.createdAt)}</p>
+              <p className="text-xs opacity-60 mt-2">
+              {post?.updatedAt && post.updatedAt !== post.createdAt
+                ? `Edited ${timeAgo(post.updatedAt)}`
+                : timeAgo(post.createdAt)}
+            </p>
 
               {/* Blog's Delete/Edit */}
-              {userDetails._id === post.author._id || userDetails.isAdmin ? (
+              {userDetails?._id === post?.author?._id || userDetails?.isAdmin ? (
               <BlogActions blog={post} user={userDetails} />
             ):null}
 
               <div className="card-actions justify-end">
-                <Link to={`/feeds/blog/${post._id}`} className="btn btn-link p-0" state={{blog:post}}>
+                <Link to={`/feeds/blog/${post?._id}`} className="btn btn-link p-0" state={{blog:post}}>
                   Read more →
                 </Link>
               </div>
@@ -101,20 +103,20 @@ const FeedsPage = () => {
               <div className="flex items-center gap-4 ">
 
                 {/* Like Button Component*/}
-                <LikeButton blogId={post._id} initialLikes={post.likes} userId={userDetails?._id}/>
+                <LikeButton blogId={post?._id} initialLikes={post?.likes} userId={userDetails?._id}/>
 
                 {/* Comments */}
-                <button className="btn btn-ghost btn-sm flex items-center gap-1" onClick={()=>{
+                <button className="absolute right-0 bottom-4 btn btn-ghost btn-sm flex items-center gap-1" onClick={()=>{
                   commentsHandler(post._id),
-                  setOpenCommentsId(openCommentsId === post._id ? null : post._id)
+                  setOpenCommentsId(openCommentsId === post?._id ? null : post?._id)
                 }}>
                   <MessageCircle size={18} />
-                  {post.comments?.length}
+                  {post?.comments?.length}
                 </button>
               </div>
-              {openCommentsId === post._id && (
+              {openCommentsId === post?._id && (
                   <div>
-                    <CommentsCard commentData={commentData} blogId={post._id}
+                    <CommentsCard commentData={commentData} blogId={post?._id}
                       userDetails={userDetails}/>
                   </div>
                 )}

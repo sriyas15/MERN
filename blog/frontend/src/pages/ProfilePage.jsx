@@ -8,11 +8,12 @@ const ProfilePage = () => {
 
   const { data: getProfile, isLoading: profileLoading } = useGetProfileQuery();
   const { data: blogs, isLoading, isError } = useGetBlogsQuery();
+  const userDetails = getProfile?.user;
   
-  const len = blogs?.getAll ? blogs.getAll.filter((post)=>post.author._id === getProfile?.user?._id).length : 0;
+  const len = blogs?.getAll ? blogs.getAll.filter((post)=>post.author._id === userDetails._id).length : 0;
   const loggedInUser = JSON.parse(localStorage.getItem("user")); 
-  const isOwner = loggedInUser?._id === getProfile?.user?._id;
-
+  const isOwner = loggedInUser?._id === userDetails?._id;
+  console.log(getProfile?.user?.following)
   const followers = getProfile?.user?.followers;
   const following = getProfile?.user?.following;
 
@@ -30,19 +31,19 @@ const ProfilePage = () => {
           <div className="avatar">
             <div className="w-32 h-32 rounded-full ring ring-primary ring-offset-base-100 ring-offset-2">
               <img
-                src={getProfile?.user?.avatar.url || defaultAvatar}
+                src={userDetails?.avatar?.url || defaultAvatar}
                 alt="avatar"
               />
             </div>
           </div>
 
           {/* Name + Username */}
-          <h2 className="text-2xl font-bold">{getProfile?.user?.name}</h2>
-          <p className="text-gray-500">@{getProfile?.user?.username}</p>
+          <h2 className="text-2xl font-bold">{userDetails?.name}</h2>
+          <p className="text-gray-500">@{userDetails?.username}</p>
 
           {/* Bio */}
-          {getProfile?.user?.bio && (
-            <p className="text-center text-gray-700 max-w-xl">{getProfile?.user?.bio}</p>
+          {userDetails.bio && (
+            <p className="text-center text-gray-700 max-w-xl">{userDetails?.bio}</p>
           )}
 
           {/* Counts */}
@@ -53,19 +54,19 @@ const ProfilePage = () => {
             </div>
 
             <div className="text-center">
-              <p className="font-bold">{getProfile?.user?.followers?.length || 0}</p>
+              <p className="font-bold">{userDetails?.followers?.length || 0}</p>
               <Link to={"/profile/followers"} state={{followers}} className="btn btn-ghost"><Users/> Followers</Link>
             </div>
 
             <div className="text-center">
-              <p className="font-bold">{getProfile?.user?.following?.length || 0}</p>
+              <p className="font-bold">{userDetails?.following?.length || 0}</p>
               <Link to={"/profile/following"} state={{following}} className="btn btn-ghost"><Users/> Following</Link>
             </div>
           </div>
 
-          {/* Edit getProfile?.user? for owner */}
+          {/* Edit userDetails for owner */}
           {isOwner && (
-            <Link to="/profile/update" className="btn btn-primary btn-sm mt-4 flex gap-2">
+            <Link to="/my-profile/update" className="btn btn-primary btn-sm mt-4 flex gap-2">
               <Edit size={16} /> Edit Profile?
             </Link>
           )}
@@ -75,11 +76,11 @@ const ProfilePage = () => {
       {/* BLOG LIST */}
       <div className="mt-8">
         <h3 className="text-xl font-semibold mb-3 flex items-center gap-2">
-          <FileText size={20} /> Blogs by {getProfile?.user?.name}
+          <FileText size={20} /> Blogs by {userDetails?.name}
         </h3>
 
           {blogs?.getAll
-            ?.filter((post) => post.author._id === getProfile?.user?._id)
+            ?.filter((post) => post.author._id === userDetails?._id)
             .map((post) => (
               <Link to={`/blog/${post._id}`} key={post._id} className="card bg-base-100 shadow-md p-5 hover:shadow-lg transition mb-3">
                 <h4 className="text-lg font-bold">{post.title}</h4>
@@ -89,7 +90,7 @@ const ProfilePage = () => {
             ))
           }
 
-          {blogs?.getAll?.filter((post) => post.author._id === getProfile?.user?._id).length === 0 && (
+          {blogs?.getAll?.filter((post) => post.author._id === userDetails?._id).length === 0 && (
             <p className="text-gray-500">No blogs yet.</p>
           )}
         </div>

@@ -1,24 +1,19 @@
 import { useState, useEffect } from "react";
-import { Camera,User,Mail,Shield,Users,Eye,EyeOff,Edit } from "lucide-react";
-import { useLocation } from "react-router-dom";
+import { Camera,User,Mail,Shield,Eye,EyeOff,Edit } from "lucide-react";
 import toast from "react-hot-toast";
 import { useGetProfileQuery,useUpdateUserMutation } from "../features/auth/authApiSlice";
 import defaultAvatar from "../assets/defaultAvatar.png"
 
 const UserProfileUpdate = () => {
   const { data: getProfile, isLoading: profileLoading } = useGetProfileQuery();
-  const { state } = useLocation();
+  const userProfile = getProfile?.user;
 
-  // Logged-in user stored in localStorage
-  const localUser = JSON.parse(localStorage.getItem("user"));
-
-  // Ensure UI reads from backend fetched user (NOT localStorage)
-  const initialUser = state?.userDetails || localUser;
-
-  const [profileUser, setProfileUser] = useState(initialUser);
+  const [profileUser, setProfileUser] = useState(userProfile);
   const [editBtn, setEditBtn] = useState(false);
 
   const [updateUser, { isLoading }] = useUpdateUserMutation();
+
+  const localUser = JSON.parse(localStorage.getItem("user")) || {};
 
   // Editable fields
   const [name, setName] = useState("");
@@ -30,17 +25,17 @@ const UserProfileUpdate = () => {
 
   // Load data from backend into form fields
   useEffect(() => {
-    if (getProfile?.user) {
-      setName(getProfile.user.name);
-      setUsername(getProfile.user.username);
-      setEmail(getProfile.user.email);
-      setProfileUser(getProfile.user);
+    if (userProfile) {
+      setName(userProfile?.name);
+      setUsername(userProfile?.username);
+      setEmail(userProfile?.email);
+      setProfileUser(userProfile);
     }
   }, [getProfile]);
 
-  const isOwner = localUser?._id === getProfile?.user?._id;
+  const isOwner = localUser?._id === userProfile?._id;
 
-  const avatarPreview = avatar ? URL.createObjectURL(avatar) : getProfile?.user?.avatar?.url || defaultAvatar;
+  const avatarPreview = avatar ? URL.createObjectURL(avatar) : userProfile?.avatar?.url || defaultAvatar;
 
   const handleSubmit = async (e) => {
 
@@ -62,7 +57,7 @@ const UserProfileUpdate = () => {
 
     try {
       const res = await updateUser({
-        userId: getProfile?.user?._id,
+        userId: userProfile?._id,
         formData,
       }).unwrap();
 

@@ -15,6 +15,7 @@ import ReadBlog from './pages/ReadBlog'
 import OthersProfile from './pages/OthersProfile'
 import AllUsersPage from './pages/AllUsersPage'
 import EditBlogPage from './pages/EditBlogPage'
+import LikedPeople from './components/LikedPeople'
 
 function App() {
 
@@ -29,8 +30,9 @@ function App() {
       <Route path='/signup' element={<SignUp/>}/>
       <Route path='/userDetails' element={<AfterRegistraion/>}/>
       <Route path='/feeds' element={<FeedsPage/>}/>
+      <Route path='/blog/:id/likes' element={<LikedPeople/>}/>
       <Route path='/feeds/blog/:id' element={<ReadBlog/>}/>
-      <Route path='/profile' element={<OthersProfile/>}/>
+      <Route path='/profile/:id' element={<OthersProfile/>}/>
       <Route path='/my-profile' element={<ProfilePage/>}/>
       <Route path='/my-profile/update' element={<UserProfileUpdate/>}/>
       <Route path='/profile/followers' element={<Followers/>}/>

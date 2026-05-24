@@ -9,12 +9,12 @@ import { useEditBlogMutation } from "../features/blog/blogApiSlice";
 const EditBlogPage = () => {
 
   const location = useLocation();
-  const blog = location.state || {};
-
-  const [title, setTitle] = useState(blog?.post?.title);
-  const [content, setContent] = useState(blog?.post?.content);
-  const [coverImage, setCoverImage] = useState(blog?.post?.coverImage?.url || null);
-  const [preview, setPreview] = useState(blog?.post?.coverImage?.url || null);
+  const blog = (location.state).blog || {};
+  console.log(blog);
+  const [title, setTitle] = useState(blog?.title);
+  const [content, setContent] = useState(blog?.content);
+  const [coverImage, setCoverImage] = useState(blog?.coverImage?.url || null);
+  const [preview, setPreview] = useState(blog?.coverImage?.url || null);
 
   
 
@@ -53,7 +53,7 @@ const EditBlogPage = () => {
 
     try {
       
-      const res = await editBlog({blogId:blog?.post?._id,formData}).unwrap();
+      const res = await editBlog({blogId:blog?._id,formData}).unwrap();
       toast.success("Blog was updated");
       navigate("/feeds");
     } catch (error) {

@@ -1,8 +1,10 @@
 import { Link, useNavigate } from "react-router-dom"
-import { Moon, Sun, Dessert, TreePine, LogOut, User, Menu } from "lucide-react";
+import { Moon, Sun, Dessert, TreePine, LogOut, User } from "lucide-react";
 import { useLogoutMutation } from "../features/auth/authApiSlice";
 import toast from "react-hot-toast";
 import { useEffect, useState } from "react";
+import defaultAvatar from "../assets/defaultAvatar.png"
+import { useGetProfileQuery } from "../features/auth/authApiSlice";
 
 const NavBar = () => {
 
@@ -10,16 +12,15 @@ const NavBar = () => {
   const [ themeMenu, setThemeMenu ] = useState(false);
   const [ theme,setTheme ] = useState("cupcake");
 
+  const { data: getProfile, isLoading: profileLoading } = useGetProfileQuery();
+
   useEffect(()=>{
     const themeFrmStrg = JSON.parse(localStorage.getItem("theme")) || "cupcake";
     document.documentElement.setAttribute("data-theme",themeFrmStrg);
   },[])
 
-  const userDetails = JSON.parse(localStorage.getItem("user"));
-
+  const userDetails = getProfile?.user;
   const isAdmin = userDetails?.isAdmin;
-
-  const defaultAvatar = "https://cdn-icons-png.flaticon.com/512/552/552721.png";
 
   const [ logout ] = useLogoutMutation();
 
@@ -120,13 +121,6 @@ const NavBar = () => {
             </ul>
             )}
           </div>
-
-          {/* <button
-            className="md:hidden btn btn-ghost btn-sm"
-            onClick={() => setOpenMenu(!openMenu)}
-          >
-            <Menu size={20} h/>
-          </button> */}
         </div>
         ):(
           <div className="flex gap-3">

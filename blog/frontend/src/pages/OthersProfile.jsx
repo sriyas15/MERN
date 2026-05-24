@@ -1,8 +1,9 @@
 import { Link, useLocation } from "react-router-dom";
 import { Users, Edit, FileText,Rss, Heart } from "lucide-react";
-import { useDeleteBlogMutation, useEditBlogMutation, useGetBlogsQuery, useToggleLikeMutation } from '../features/blog/blogApiSlice';
+import { useDeleteBlogMutation, useEditBlogMutation, useGetBlogsQuery } from '../features/blog/blogApiSlice';
 import { useGetProfileQuery } from "../features/auth/authApiSlice";
 import defaultAvatar from "../assets/defaultAvatar.png"
+import LikeButton from "../components/LikeButton";
 
 const OthersProfile = () => {
 
@@ -11,26 +12,14 @@ const OthersProfile = () => {
 
   const { data:getProfile } = useGetProfileQuery();
   const { data: blogs, isLoading, isError } = useGetBlogsQuery();
-  const [ toggleLike ] = useToggleLikeMutation();
 
-  const len = blogs?.getAll ? blogs.getAll.filter((post)=>post.author._id === user._id).length : 0;
+  const len = blogs?.getAll ? blogs?.getAll.filter((post)=>post?.author?._id === user?._id).length : 0;
   const loggedUser = getProfile?.user;
 
   const followers = user?.followers;
   const following = user?.following;
 
-
-  const toggleLikeBtn = async(id)=>{
-
-    try {
-         const likedMsg = await toggleLike(id).unwrap();
-    
-        } catch (error) {
-          console.log("Like Button failed");
-          toast.error(error?.data?.message || "Like button failed");
-        }
-  }
-  
+  console.log(user)  
 
   return (
     <div className="max-w-4xl mx-auto p-4">
@@ -51,12 +40,12 @@ const OthersProfile = () => {
           </div>
 
           {/* Name + Username */}
-          <h2 className="text-2xl font-bold">{user.name}</h2>
-          <p className="text-gray-500">@{user.username}</p>
+          <h2 className="text-2xl font-bold">{user?.name}</h2>
+          <p className="text-gray-500">@{user?.username}</p>
 
           {/* Bio */}
-          {user.bio && (
-            <p className="text-center text-gray-700 max-w-xl">{user.bio}</p>
+          {user?.bio && (
+            <p className="text-center text-gray-700 max-w-xl">{user?.bio}</p>
           )}
 
           {/* Counts */}
@@ -67,12 +56,12 @@ const OthersProfile = () => {
             </div>
 
             <div className="text-center">
-              <p className="font-bold">{user.followers?.length || 0}</p>
+              <p className="font-bold">{user?.followers?.length || 0}</p>
               <Link to={"/profile/followers"} state={{followers}} className="btn btn-ghost"><Users/> Followers</Link>
             </div>
 
             <div className="text-center">
-              <p className="font-bold">{user.following?.length || 0}</p>
+              <p className="font-bold">{user?.following?.length || 0}</p>
               <Link to={"/profile/following"} state={{following}} className="btn btn-ghost"><Users/> Following</Link>
             </div>
           </div>
@@ -83,15 +72,13 @@ const OthersProfile = () => {
       {/* BLOG LIST */}
       <div className="mt-8">
         <h3 className="text-xl font-semibold mb-3 flex items-center gap-2">
-          <FileText size={20} /> Blogs by {user.name}
+          <FileText size={20} /> Blogs by {user?.name}
         </h3>
 
           {blogs?.getAll
-            ?.filter((post) => post.author._id === user._id)
+            ?.filter((post) => post.author._id === user?._id)
             .map((post) => {
               
-              const isLiked = post.likes.includes(loggedUser._id);
-
                return (
                 <div className="relative">
                 <Link to={`/feeds/blog/${post._id}`} key={post._id} state={{blog:post}}
@@ -101,16 +88,15 @@ const OthersProfile = () => {
                   </div>
                   
                 </Link>
-                <button className="absolute right-7 bottom-5 flex items-center gap-1" onClick={()=>toggleLikeBtn(post._id)}>
-                  <Heart size={18} fill={isLiked ? "red" : "none"} strokeWidth={2}/> {post.likes.length}
-                </button>
+                
+                <LikeButton blogId={post?._id} userId={loggedUser?._id} initialLikes={post?.likes}/>
                </div>
                )
               
               })
           }
 
-          {blogs?.getAll?.filter((post) => post.author._id === user._id).length === 0 && (
+          {blogs?.getAll?.filter((post) => post?.author?._id === user?._id).length === 0 && (
             <p className="text-gray-500">No blogs yet.</p>
           )}
         </div>

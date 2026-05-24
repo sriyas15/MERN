@@ -46,7 +46,6 @@ const AfterRegistration = () => {
       console.log("Error in update profile ",error);
       toast.error(error?.data?.message || "Error in updating profile");
     }
-
   };
 
   return (

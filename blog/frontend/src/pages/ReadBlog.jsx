@@ -1,4 +1,4 @@
-import { useLocation } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import defaultCover from "../assets/default-cover.png";
 import { timeAgo } from "../utils/timeAgo";
 import { useGetProfileQuery } from "../features/auth/authApiSlice";
@@ -41,7 +41,6 @@ if (!blog){
         toast.error(error?.data?.message);
       }
   }
-    
   return (
     <div className="max-w-4xl mx-auto p-4 md:p-6">
 
@@ -63,14 +62,17 @@ if (!blog){
         <h1 className="text-3xl md:text-4xl font-bold mb-4">
           {blog?.title}
         </h1>
+
         <LikeButton blogId={blog?._id} initialLikes={blog?.likes} userId={userDetails?._id}/>
-        <button className="absolute right-1 bottom-4 btn btn-ghost btn-sm flex items-center gap-1" onClick={()=>{
+
+        <button className="absolute right-2 bottom-4   btn btn-ghost btn-sm flex items-center gap-1" onClick={()=>{
           commentsHandler(blog._id),
           setOpenCommentsId(openCommentsId === blog._id ? null : blog._id)
         }}>
           <MessageCircle size={16} />
           {blog.comments?.length}
       </button>
+      
       </div>
 
       {openCommentsId === blog._id && (
@@ -87,10 +89,14 @@ if (!blog){
           alt="Author Avatar"
           className="w-12 h-12 rounded-full ring ring-primary ring-offset-2"/>
         <div>
-          <p className="font-semibold text-lg">{blog?.author?.name}</p>
+
+          <div className="flex justify-center items-center gap-16">
+            <Link to={`/profile/${blog?.author?._id}`} state={{user:blog?.author}}><p className="font-semibold text-lg">{blog?.author?.name}</p></Link>
+            <FollowButton author={blog?.author} currentUser={userDetails}/>
+          </div>
           <p className="text-gray-500 text-sm">@{blog?.author?.username}</p>
           <p className="text-xs text-gray-400">Posted {timeAgo(blog?.createdAt)}</p>
-          <FollowButton author={blog?.author} currentUser={userDetails}/>
+          
         </div>
 
       </div>

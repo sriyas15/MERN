@@ -7,4 +7,4 @@ export const store = configureStore({
     },
     middleware:(getDefaulMiddleware) =>
         getDefaulMiddleware().concat(apiSlice.middleware)
-})
+});

@@ -13,11 +13,8 @@ import LoggedInHome from "./LoggedInHome";
       {/* Hero Section */}
       <section className="hero min-h-[70vh]">
         <div className="hero-content flex-col lg:flex-row-reverse">
-          <img
-            src="https://images.unsplash.com/photo-1524995997946-a1c2e315a42f"
-            alt="Blog Hero"
-            className="rounded-2xl shadow-xl max-w-sm object-cover"
-          />
+          <img src="https://images.unsplash.com/photo-1524995997946-a1c2e315a42f"
+            alt="Blog Hero" className="rounded-2xl shadow-xl max-w-sm object-cover"/>
 
           <div>
             <h1 className="text-5xl font-bold leading-tight">

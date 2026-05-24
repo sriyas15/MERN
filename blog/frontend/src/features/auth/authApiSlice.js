@@ -45,6 +45,7 @@ export const authApiSlice = apiSlice.injectEndpoints({
                 method:'POST',
                 body:data
             }),
+            invalidatesTags:["Users"]
         }),
 
         follow:builder.mutation({
@@ -61,9 +62,7 @@ export const authApiSlice = apiSlice.injectEndpoints({
                 method:"DELETE"
             }),
             invalidatesTags:["Users"]
-        })
-
-        
+        }) 
     }),
 });
 

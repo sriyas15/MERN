@@ -8,13 +8,13 @@ import defaultAvatar from "../assets/defaultAvatar.png"
 const CommentsCard = ({ commentData, blogId, userDetails }) => {
 
   const [commentText, setCommentText] = useState("");
+  const [ editBtn,setEditBtn ] = useState(false);
   const [editedComment, setEditedComment] = useState("");
 
   const [postComment, { isLoading }] = usePostCommentMutation();
   const [editComment] = useEditCommentMutation();
   const [deleteComment] = useDeleteCommentMutation();
-
-  const isDisabled = !commentText.trim();
+  console.log(commentData)
 
   // ⭐ For handling dropdown toggle
   const [openMenuId, setOpenMenuId] = useState(null);
@@ -24,28 +24,30 @@ const CommentsCard = ({ commentData, blogId, userDetails }) => {
   };
 
   const handleAddComment = async (blogId) => {
+
     if (!commentText.trim()) {
-      toast.error("Write your comment");
+      toast.error("Please enter your comment");
       return;
     }
-    try {
-      await postComment({ blogId, content: commentText }).unwrap();
-      setCommentText("");
+      try {
+        await postComment({ blogId, content: commentText }).unwrap();
+        setCommentText("");
       toast.success("Comment added");
     } catch (error) {
-      toast.error(error?.data?.message);
-    }
+        toast.error(error?.data?.message);
+     }
+    
   };
 
   const commentEditBtn = async (commentText,id) => {
 
-    if (!editedComment.trim()) {
+    if (!commentText.trim()) {
       toast.error("Please enter your comment");
       return;
     }
 
     try {
-      await editComment({ editedComment, id }).unwrap();
+      await editComment({ commentText, id }).unwrap();
       toast.success("Comment Updated");
       setEditedComment("");
       setOpenMenuId(null);
@@ -88,7 +90,7 @@ const CommentsCard = ({ commentData, blogId, userDetails }) => {
                   <ul className="menu bg-base-100 absolute right-0 mt-2 rounded-xl shadow-xl p-2 z-50 w-40">
 
                     <li>
-                      <button onClick={() => {commentEditBtn(commentText,c._id),setCommentText(commentText)}}>
+                      <button onClick={() => {setEditBtn(!editBtn); setCommentText(c.content); setOpenMenuId(false)}}>
                         <Edit /> Edit
                       </button>
                     </li>
@@ -137,14 +139,18 @@ const CommentsCard = ({ commentData, blogId, userDetails }) => {
           placeholder="Write a comment..."
           className="w-full mt-3 p-2 border rounded-lg"
         />
-
+      
         <button
-          onClick={() => handleAddComment(blogId)}
-          disabled={isLoading || isDisabled}
+          onClick={() => {
+            if(editBtn) commentEditBtn(commentText,comment._id)
+            else handleAddComment(blogId)
+          }}
+          disabled={isLoading}
           className="mt-2 bg-blue-500 text-white px-3 py-1 rounded"
         >
-          {isLoading ? "Posting..." : "Post"}
-        </button>
+          {editBtn ? "Update" : "Post"}
+        </button> 
+        
       </div>
 
     </div>
